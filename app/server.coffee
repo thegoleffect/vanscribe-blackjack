@@ -51,7 +51,7 @@ app.get("/config", (req, res) ->
     res.send("Not found", 404)
   else
     res.psend({
-      env: process.env
+      env: process.env,
       rconfig: url.parse(process.env.REDISTOGO_URL)
     })
 )
