@@ -18,6 +18,7 @@ app.configure(() ->
 nitrous = new n2o(app, __dirname)
 
 app.configure("development", "production", () ->
+  app.use(nitrous.init())
   app.use(express.bodyParser())
   app.use(express.cookieParser())
   app.use(express.logger())
