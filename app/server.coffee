@@ -42,11 +42,6 @@ app.configure("production", () ->
 )
 
 
-
-app.get("/", (req, res) ->
-  res.send("Ohai.")
-)
-
 app.get("/config", (req, res) ->
   secret = req.param("secret", "")
   if secret != "hippo"
@@ -60,7 +55,7 @@ app.get("/config", (req, res) ->
     res.psend(output)
 )
 
-app.get("/xyzzyx", (req, res) -> res.send("1")) # LB/Proxy Heartbeat
+
 
 # app.config.port = process.env.PORT || 3000
 app.listen(app.config.port, () ->
