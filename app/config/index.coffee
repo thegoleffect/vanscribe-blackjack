@@ -1,3 +1,6 @@
+express = require("express")
+url = require("url")
+
 settings = {
   # assetsSettings: assetSettings,
   debug: true,
@@ -10,11 +13,28 @@ settings = {
   },
 }
 
-settings.port = process.env.PORT || 3000
+settings.port = process.env.PORT || 8000
 
 if process.env.REDISTOGO_URL?
-  settings.redisConfig = url.parse(process.env.REDISTOGO_URL)
-  settings.redisConfig.pass = settings.redisConfig.auth.split(":").pop()
+  settings.redisConfig = redisConfig = url.parse(process.env.REDISTOGO_URL)
+  [redisConfig.db, redisConfig.pass] = redisConfig.auth.split(":")
+  settings.session.store = (app) ->
+    return {
+      secret: settings.session.secret,
+      store: new app.redisStore({
+        host: redisConfig.hostname,
+        port: redisConfig.port,
+        # db: redisConfig.db,
+        pass: redisConfig.pass
+      })
+    }
+else
+  settings.session.store = (app) ->
+    return {
+      secret: settings.session.secret,
+      store: new express.session.MemoryStore()
+    }
+
 
 if process.env.NODE_ENV == "production"
   # do stuff to settings

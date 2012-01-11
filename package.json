@@ -2,6 +2,7 @@
   "name": "vanscribe-blackjack",
   "version": "0.1.0",
   "dependencies": {
+    "backbone": "0.5.3",
     "browserchannel": "0.3.2",
     "coffee-script": "1.2.0",
     "express": "2.5.5",
