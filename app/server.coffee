@@ -24,6 +24,7 @@ app.configure("development", "production", () ->
   app.use(express.logger())
   app.use(express.favicon(__dirname + "/public/favicon.ico"))
   # app.use(express.static(__dirname + "/public", {maxAge: 86400000}))
+  app.use(nitrous.mvc())
 )
 app.configure("development", () ->
   app.use(express.session({
@@ -51,10 +52,12 @@ app.get("/config", (req, res) ->
   if secret != "hippo"
     res.send("Not found", 404)
   else
-    res.psend({
+    output = {
       env: process.env,
-      rconfig: url.parse(process.env.REDISTOGO_URL) # TODO: 
-    })
+    }
+    output.rconfig = url.parse(process.env.REDISTOGO_URL) if process.env.REDISTOGO_URL?
+
+    res.psend(output)
 )
 
 app.get("/xyzzyx", (req, res) -> res.send("1")) # LB/Proxy Heartbeat
