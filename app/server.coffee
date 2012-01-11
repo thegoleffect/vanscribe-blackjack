@@ -11,11 +11,14 @@ helpers = () ->
     next()
 
 app = express.createServer()
+app.config = {} # TODO: use nitrous later
+
 app.configure(() ->
-  app.use(express.logger())
   app.use(helpers())
 )
-
+app.configure("development", "production", () ->
+  app.use(express.logger())
+)
 
 app.get("/", (req, res) ->
   res.send("Ohai.")
@@ -29,7 +32,14 @@ app.get("/config", (req, res) ->
     res.psend(process.env)
 )
 
-port = process.env.PORT || 3000
-app.listen(port, () ->
-  console.log("listening on port #{port}")
+app.get("/xyzzyx", (req, res) -> res.send("1")) # LB/Proxy Heartbeat
+
+app.config.port = process.env.PORT || 3000
+app.listen(app.config.port, () ->
+  console.log("listening on port #{app.config.port}")
 )
+app.on("close", () ->
+  console.log("server closed")
+)
+
+module.exports = app
