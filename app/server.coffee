@@ -24,20 +24,14 @@ app.configure("development", "production", () ->
   app.use(express.logger())
   app.use(express.favicon(__dirname + "/public/favicon.ico"))
   # app.use(express.static(__dirname + "/public", {maxAge: 86400000}))
+  app.use(express.session(app.config.session(app)))
+
   app.use(nitrous.mvc())
 )
 app.configure("development", () ->
-  app.use(express.session({
-    secret: app.config.session.secret,
-    # store: process.redisStore = new app.redisStore()
-  }))
   app.use(express.errorHandler({dumpExceptions:true,showStack:true}))
 )
 app.configure("production", () ->
-  app.use(express.session({
-    secret: app.config.session.secret,
-    # store: new app.redisStore(redis.createClient(r.port, r.host))
-  }))
   app.use(express.errorHandler())
 )
 
@@ -50,9 +44,11 @@ app.get("/config", (req, res) ->
     output = {
       env: process.env,
     }
-    output.rconfig = url.parse(process.env.REDISTOGO_URL) if process.env.REDISTOGO_URL?
-
     res.psend(output)
+)
+
+app.get("/session", (req, res) ->
+  res.psend(req.session)
 )
 
 

@@ -12,6 +12,10 @@ settings = {
 
 settings.port = process.env.PORT || 3000
 
+if process.env.REDISTOGO_URL?
+  settings.redisConfig = url.parse(process.env.REDISTOGO_URL)
+  settings.redisConfig.pass = settings.redisConfig.auth.split(":").pop()
+
 if process.env.NODE_ENV == "production"
   # do stuff to settings
 else
