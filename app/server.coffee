@@ -53,7 +53,7 @@ app.get("/config", (req, res) ->
   else
     res.psend({
       env: process.env,
-      rconfig: url.parse(process.env.REDISTOGO_URL)
+      rconfig: url.parse(process.env.REDISTOGO_URL) # TODO: 
     })
 )
 
