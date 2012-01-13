@@ -13,7 +13,7 @@ settings = {
   },
 }
 
-settings.port = process.env.PORT || 8000
+settings.port = process.env.PORT || 3000
 
 if process.env.REDISTOGO_URL?
   settings.redisConfig = redisConfig = url.parse(process.env.REDISTOGO_URL)
