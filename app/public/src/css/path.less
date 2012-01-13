@@ -1,5 +1,12 @@
 #menu {
   display: none;
+  z-index: 30;
+}
+
+.items {
+  .action2, .action4, .action6 {
+    display: none;
+  }
 }
 
 /* line 24, ../sass/_layout.scss */
@@ -23,6 +30,7 @@
   left: @circle-left;
   height: @circle-height;
   width: @circle-width;
+  z-index: 30;
   -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
   -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
   -o-box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
@@ -160,7 +168,6 @@
   0% {
     -webkit-transform: translate3d(0, 0, 0px) rotateZ(270deg);
     -webkit-animation-timing-function: cubic-bezier(1, 0.6, 0.57, 0.75);
-    opacity: 1;
   }
 
   /* line 52, ../sass/app.scss */
@@ -466,6 +473,5 @@
   /* line 70, ../sass/app.scss */
   100% {
     -webkit-transform: translate3d(0, 0, 0px) rotateZ(540deg);
-    opacity: 0;
   }
 }
