@@ -20,23 +20,54 @@ a {
 }
 
 #container {
-  .shadow;
+  /*.shadow;*/
   margin: 0 auto;
 }
 
+#container, #masthead, #masthead .heading, .container, #footer {  
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 #masthead, .container, #footer {
-  padding: 0 18/@em;
+  background-color: @color-background;
+/*  padding: 0 18/@em;
   margin: 0 auto;
   max-width: @8cols;
-  background-color: @color-background;
+  background-color: @color-background;*/
 }
 
 #masthead {
   /*padding-top: 8/@em;*/
   /*text-align: center;*/
+  .heading-outer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10000;
+    overflow: visible;
+    background-color: #222;
+    background-repeat: repeat-x;
+    background-image: -khtml-gradient(linear, left top, left bottom, from(#333333), to(#222222));
+    background-image: -moz-linear-gradient(top, #333333, #222222);
+    background-image: -ms-linear-gradient(top, #333333, #222222);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #333333), color-stop(100%, #222222));
+    background-image: -webkit-linear-gradient(top, #333333, #222222);
+    background-image: -o-linear-gradient(top, #333333, #222222);
+    background-image: linear-gradient(top, #333333, #222222);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#333333', endColorstr='#222222', GradientType=0);
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  }
   
   .heading {
-    padding-left: .2em; 
+    padding-left: .4em;
+    color: white;
+    margin: 0 auto;
+
     .fake_icon, .h1 {
       font-size: 1.8em;
       float: left;
@@ -44,8 +75,7 @@ a {
     }
 
     .fake_icon {
-      background-color: @color-background;
-      color: black;
+      background-color: transparent;
       padding-right: .2em;
     }
     .h1 {
