@@ -25,8 +25,8 @@ module.exports = {
     if /\.less/.test(lpath)
       parser = new(less.Parser)({
         paths: [
-          path.join(__dirname, "../public/src/css/"),
-          path.join(__dirname, "../public/bootstrap/lib/")
+          path.join(__dirname, "../public/src/css/")
+          # path.join(__dirname, "../public/bootstrap/lib/")
         ]
       })
       
@@ -66,7 +66,7 @@ module.exports = {
       console.log(msg)
       
       args = [
-        "-s", "projects.vanscribe.com",
+        "-s", "blackjack.vanscribe.com",
         "-m", msg
       ]
       spawn("growlnotify", args)

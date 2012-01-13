@@ -1,0 +1,53 @@
+a {
+  color: @anchor_color;
+  text-decoration: none;
+}
+
+#masthead, .container, #footer {
+  padding: 0 18/@em;
+  margin: 0 auto;
+  max-width: @8cols;
+}
+#masthead {
+  /*padding-top: 8/@em;*/
+  /*text-align: center;*/
+  h1 {
+    font-size: 1.5em;
+    font-family: "Museo", "Helvetica Neue", sans-serif;
+    font-weight: 900;
+  }
+}
+#nav {
+  padding: 24/@em 0 24/@em 0;
+  height: 48/@em;
+  width: @4cols;
+  margin: 0 auto;
+
+  li {
+    list-style: none;
+    display: block;
+    float: left;
+    width: 48/@em;
+    margin-left: 24/@em;
+  }
+
+  li:first-child {
+    margin-left: 0;
+  }
+
+  a {
+    display: block;
+    text-align: center;
+    border: 0;
+  }
+
+  .fake_icon {
+    font-size: 28/@em;
+    line-height: (48)/28*1em;
+    background-color: black;
+    color: white;
+    /*background: @emphasis;*/
+    /*color: @background;*/
+    vertical-align: middle;
+  }
+}

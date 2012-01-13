@@ -35,7 +35,7 @@ class WebServer #extends backbone.Model
     asset_config = app.config.assets
     assets_middleware = asset.manager(asset_config)
     asset.helpers.js()
-    asset.helpers.css()
+    # asset.helpers.css()
 
     app.configure("development", "production", () ->
       app.use(nitrous.init())
