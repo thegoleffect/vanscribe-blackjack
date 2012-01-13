@@ -1,4 +1,5 @@
 express = require("express")
+path = require("path")
 url = require("url")
 
 settings = {
@@ -14,6 +15,9 @@ settings = {
 }
 
 settings.port = process.env.PORT || 3000
+process.env.PORT ?= settings.port
+
+settings.assets = require("./assets") if path.existsSync(path.join(__dirname, "./assets.coffee"))
 
 if process.env.REDISTOGO_URL?
   settings.redisConfig = redisConfig = url.parse(process.env.REDISTOGO_URL)

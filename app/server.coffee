@@ -10,6 +10,12 @@ sharejs = require("share").server
 url = require("url")
 
 monkeypatch = require("./lib/monkeypatch_sharejs").patch()
+blackjack = require("./lib/blackjack")
+asset = { # TODO: pull from spoondate into nitrous
+  manager: require('connect-assetmanager'), 
+  handler: require('connect-assetmanager-handlers'),
+  helpers: require("../scripts/assets")
+}
 
 class WebServer #extends backbone.Model
   start: () ->
@@ -24,43 +30,39 @@ class WebServer #extends backbone.Model
     )
     nitrous = new n2o(app, __dirname)
     @config = app.config # convenience interface
+
+    # TODO: pull from spoondate into nitrous
+    asset_config = app.config.assets
+    assets_middleware = asset.manager(asset_config)
+    asset.helpers.js()
+    asset.helpers.css()
+
     app.configure("development", "production", () ->
       app.use(nitrous.init())
       app.use(express.bodyParser())
       app.use(express.cookieParser())
-      # app.use(express.logger())
+      # app.use(express.logger()) # TODO: use winston
       app.use(express.favicon(__dirname + "/public/favicon.ico"))
-      # app.use(express.static(__dirname + "/public", {maxAge: 86400000}))
+      # app.use(express.static(__dirname + "/public", {maxAge: 86400000})) # TODO: switch on when finished
       app.use(express.static(__dirname + "/public"))
       app.use(express.session(app.config.session.store(app)))
-      app.use(express.errorHandler({dumpExceptions:true,showStack:true}))
-      # app.use(browserchannel({base: "/rpc"}, (session) ->
-      #   # console.log(session)
-      #   # if session.address != '127.0.0.1' or session.appVersion != '10'
-      #   #   # calling client.stop() asks the client to stop trying to connect.
-      #   #   # The callback is called once the stop message has been sent.
-      #   #   session.stop -> session.close()
-      #   console.log("New session: #{session.id} from #{session.address} with cookies #{session.headers.cookie}")
-      #   session.send("you have connected", (err) ->
-      #     console.warn(err)
-      #   )
+      app.use(express.errorHandler({dumpExceptions:true,showStack:true})) # TODO: pull out of production
 
-      #   session.on("message", (data) ->
-      #     console.log("message = #{data}")
-      #     session.send(data)
-      #   )
-
-      #   session.on("close", (reason) ->
-      #     console.log("Session #{session.id} disconnected (#{reason})")
-      #   )
-
-      #   # session.stop()
-
-      #   # session.close()
-      # ))
       app.use(nitrous.mvc())
+      app.use(blackjack.helpers())
+      app.use(assets_middleware)
+
       app.use(express.router(nitrous.routes()))
     )
+
+    app.dynamicHelpers({
+      'assetsCacheHashes': (req, res) ->
+        assets_middleware.cacheHashes.js = 0 if !assets_middleware.cacheHashes.js?
+        assets_middleware.cacheHashes.css = 0 if !assets_middleware.cacheHashes.css?
+        return assets_middleware.cacheHashes
+      'session': (req, res) -> return req.session
+    })
+
     share_options = {
       db: {
         type: "redis",
@@ -73,6 +75,7 @@ class WebServer #extends backbone.Model
     }
     _.extend(share_options.db, app.config.redisConfig)
     sharejs.attach(app, share_options)
+    
     app.listen(app.config.port, () ->
       console.log("listening on port #{app.config.port}")
     )

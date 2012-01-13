@@ -6,7 +6,7 @@ Deck = require("./deck")
 EventEmitter = require("events").EventEmitter
 
 class Dealer extends EventEmitter
-  hand_in_progress: false
+  # hand_in_progress: false
   default_rules: {
     decks: 6,
     seats: 5,
@@ -37,16 +37,28 @@ class Dealer extends EventEmitter
     @decks = new Deck(@rules.decks)
     @rack = hat.rack()
     @table = {
-      seats: {},
+      # seats: {},
+      created: new Date(),
+      in_progress: false,
       free_seats: [@rules.seats - 1..0],
       pot: 0,
       players: {},
       hands: {},
       dealer_hand: []
     }
+  
+  validate_state: (state) ->
+    # TODO: 
+    return true
+
+  load: (state) ->
+    if not @valid_state(state)
+      throw "invalid state provided"
+    else
+      @table = state
 
   add_player: (player) ->
-    throw "cannot add player during a hand" if @hand_in_progress # TODO: switch to queue?
+    throw "cannot add player during a hand" if @table.in_progress # TODO: switch to queue?
     throw "cannot sit at a full table" if @table.free_seats.length <= 0
 
     # @table.seats[uuid] = @table.free_seats.pop()
@@ -91,7 +103,7 @@ class Dealer extends EventEmitter
     @table.dealer_hand.push(@deck.pop())
 
   start_hand: () ->
-    @hand_in_progress = true
+    @table.in_progress = true
     @shuffle() if @rules.dealer.should_shuffle(@decks)
     
     # deal out cards mimicking real dealer
@@ -103,6 +115,7 @@ class Dealer extends EventEmitter
       player_uuid = @table.players[i]
       @table.cards[player_uuid] = []
     @table.dealer_hand = []
+    @table.in_progress = false
   
   get_hand: (uuid, pass) ->
     return "invalid credentials" if not @table.players[uuid]? or pass != @table.players[uuid].pass
