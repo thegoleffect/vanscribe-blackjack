@@ -1,3 +1,5 @@
+
+
 #menu {
   display: none;
   z-index: 30;
@@ -25,6 +27,18 @@
 @circle-height: 40/@em;
 @circle-width: 40/@em;
 
+.rounded (@tl: @circle-height, @tr: @circle-height, @br: @circle-height, @bl: @circle-height) {
+  -moz-border-radius: @tl @tr @br @bl;
+  -webkit-border-top-left-radius: @tl;
+  -webkit-border-top-right-radius: @tr;
+  -webkit-border-bottom-right-radius: @br;
+  -webkit-border-bottom-left-radius: @bl;
+  -o-border-radius: @tl @tr @br @bl;
+  -ms-border-radius: @tl @tr @br @bl;
+  khtml-border-radius: @tl @tr @br @bl;
+  border-radius: @tl @tr @br @bl;
+}
+
 .circle-container {
   position: fixed;
   bottom: @circle-bottom;
@@ -36,12 +50,13 @@
   -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
   -o-box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
-  -moz-border-radius: @circle-height;
+/*  -moz-border-radius: @circle-height;
   -webkit-border-radius: @circle-height;
   -o-border-radius: @circle-height;
   -ms-border-radius: @circle-height;
   -khtml-border-radius: @circle-height;
-  border-radius: @circle-height;
+  border-radius: @circle-height;*/
+  .rounded();
 }
 /* line 34, ../sass/_layout.scss */
 .circle-container .circle {
@@ -76,12 +91,13 @@
   -webkit-box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.3);
   -o-box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.3);
   box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.3);
-  -moz-border-radius: @circle-height;
+/*  -moz-border-radius: @circle-height;
   -webkit-border-radius: @circle-height;
   -o-border-radius: @circle-height;
   -ms-border-radius: @circle-height;
   -khtml-border-radius: @circle-height;
-  border-radius: @circle-height;
+  border-radius: @circle-height;*/
+  .rounded();
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
   -moz-appearance: none;
