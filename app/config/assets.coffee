@@ -40,7 +40,9 @@ module.exports = {
       # "../../css/prettify.css"
     ],
     "preManipulate": {
-      "^": [ handlers.lessRenderer ]
+      "^": [
+        handlers.lessRenderer 
+      ]
     },
     "postManipulate": {
       "^": [

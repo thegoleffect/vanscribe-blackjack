@@ -18,13 +18,17 @@
   <!-- end CSS-->
 
   <script src="js/libs/modernizr-2.0.6.min.js"></script>
+  <script type="text/javascript" src="http://use.typekit.com/crr3srf.js"></script>
+  <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 </head>
 <body lang="en">
-  {{> common-masthead }}
-  <div class="container">
-    {{{ body }}}
-  </div> <!--! end of #container -->
-  {{> common-footer }}
+  <div id="container">
+    {{> common-masthead }}
+    <div class="container">
+      {{{ body }}}
+    </div> <!--! end of #container -->
+    {{> common-footer }}
+  </div>
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
   <script>window.jQuery || document.write('<script src="/js/libs/jquery-1.6.2.min.js"><\/script>')</script>
@@ -32,8 +36,6 @@
   <!-- scripts concatenated and minified via ant build script-->
   <script defer src="/js/plugins.js"></script>
   <script defer src="/static/js/{{assetsCacheHashes.js}}/client.js"></script>
-  <script defer type="text/javascript" src="http://use.typekit.com/crr3srf.js"></script>
-  <script defer type="text/javascript">try{Typekit.load();}catch(e){}</script>
   <!-- end scripts-->
 
   <script> // Google Analytics

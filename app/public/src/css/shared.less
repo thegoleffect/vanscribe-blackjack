@@ -1,53 +1,89 @@
+.shadow {
+  -moz-box-shadow: 0 0 8px 4px rgba(216, 216, 216, 0.7);
+  -webkit-box-shadow: 0 0 8px 4px rgba(216, 216, 216, 0.7);
+}
+
 a {
-  color: @anchor_color;
+  color: @color-anchor;
   text-decoration: none;
+}
+
+.fake_icon {
+  background-color: @color-emphasis;
+  color: @color-background;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.clear {
+  clear: both;
+}
+
+#container {
+  .shadow;
+  margin: 0 auto;
 }
 
 #masthead, .container, #footer {
   padding: 0 18/@em;
   margin: 0 auto;
   max-width: @8cols;
+  background-color: @color-background;
 }
+
 #masthead {
   /*padding-top: 8/@em;*/
   /*text-align: center;*/
-  h1 {
-    font-size: 1.5em;
-    font-family: "Museo", "Helvetica Neue", sans-serif;
-    font-weight: 900;
+  
+  .heading {
+    padding-left: .2em; 
+    .fake_icon, .h1 {
+      font-size: 1.8em;
+      float: left;
+      line-height: 1.25em;
+    }
+
+    .fake_icon {
+      background-color: @color-background;
+      color: black;
+      padding-right: .2em;
+    }
+    .h1 {
+      font-family: "museo-1", "museo-2", "Helvetica Neue", sans-serif;
+      font-weight: 900;
+      font-style: italic;
+    }
+  }
+
+  #nav {
+    padding: 0 0 24/@em 0;
+    height: 48/@em;
+    width: @4cols;
+    margin: 0 auto;
+
+    li {
+      list-style: none;
+      display: block;
+      float: left;
+      width: 48/@em;
+      margin-left: 24/@em;
+    }
+
+    li:first-child {
+      margin-left: 0;
+    }
+
+    a {
+      display: block;
+      text-align: center;
+      border: 0;
+    }
+
+    .fake_icon {
+      line-height: (48)/28*1em;
+      font-size: 28/@em;
+      width: 1.8em;
+    }
   }
 }
-#nav {
-  padding: 24/@em 0 24/@em 0;
-  height: 48/@em;
-  width: @4cols;
-  margin: 0 auto;
 
-  li {
-    list-style: none;
-    display: block;
-    float: left;
-    width: 48/@em;
-    margin-left: 24/@em;
-  }
-
-  li:first-child {
-    margin-left: 0;
-  }
-
-  a {
-    display: block;
-    text-align: center;
-    border: 0;
-  }
-
-  .fake_icon {
-    font-size: 28/@em;
-    line-height: (48)/28*1em;
-    background-color: black;
-    color: white;
-    /*background: @emphasis;*/
-    /*color: @background;*/
-    vertical-align: middle;
-  }
-}

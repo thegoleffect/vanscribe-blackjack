@@ -12,6 +12,14 @@ path = require("path")
 #   ]
 # })
 
+notify = (msg) ->
+  args = [
+    "-s", "blackjack.vanscribe.com",
+    "-m", msg
+  ]
+  spawn("growlnotify", args)
+
+
 # coffeeRenderer & sassRenderer from http://www.oesmith.co.uk/post/4981762820/using-connect-assetmanager-with-sass-and-coffee-script
 module.exports = {
   coffeeRenderer: (file, path, index, isLast, callback) ->
@@ -22,22 +30,35 @@ module.exports = {
       callback(file)
   
   lessRenderer: (file, lpath, index, isLast, callback) ->
+    # notify("[assetmanager]: update css assets triggered") if index == 0
+
     if /\.less/.test(lpath)
-      parser = new(less.Parser)({
-        paths: [
-          path.join(__dirname, "../public/src/css/")
-          # path.join(__dirname, "../public/bootstrap/lib/")
-        ]
-      })
+      try
+        parser = new(less.Parser)({
+          paths: [
+            path.join(__dirname, "../public/src/css/")
+            # path.join(__dirname, "../public/bootstrap/lib/")
+          ]
+        })
+      catch error
+        console.log("[err]: unable to create less parser")
+        throw error
       
-      parser.parse(file, (err, tree) ->
-        if err
-          console.log("err: #{err}")
-          # callback("")
-        else
-          result = tree.toCSS({compress: true})
-          callback(result)
-      )
+
+      try
+        parser.parse(file, (err, tree) ->
+          if err
+            console.log("err: #{err}")
+            # callback("")
+          else
+            result = tree.toCSS({compress: true})
+            callback(result)
+        )
+      catch error
+        console.log("unable to parse #{file}")
+        console.warn(error)
+        throw error
+      
       # less.render(file, (err, css) ->
       #   if err
       #     console.log(err)
@@ -65,10 +86,6 @@ module.exports = {
       # console.log("connect-assetmanager has updated #{type} assets")
       console.log(msg)
       
-      args = [
-        "-s", "blackjack.vanscribe.com",
-        "-m", msg
-      ]
-      spawn("growlnotify", args)
+      notify(msg)
       callback(file)
 }

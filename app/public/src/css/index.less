@@ -199,7 +199,7 @@ body {
 /*
   Shared layouts
 */
-@anchor_color: #171717;
+@import "colors";
 @import "shared";
 
 
@@ -211,8 +211,8 @@ body {
 */
 @import "mobile/index";
 @media screen and (min-width: 15em) {
-  #masthead, .container, #footer {
-    .mobile-container
+  #container, #masthead, .container, #footer {
+    .mobile-container;
   }
 }
 
