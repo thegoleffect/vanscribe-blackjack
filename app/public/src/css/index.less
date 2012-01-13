@@ -201,8 +201,10 @@ body {
 */
 @import "colors";
 @import "shared";
-@import "path/defaults";
-
+/*@import "path/defaults";*/
+@import "path/common";
+@import "path/index";
+@import "path/mobile-triple";
 /*
   Mobile layout 
   240–479 px
@@ -211,10 +213,11 @@ body {
 
 @media screen and (min-width: 15em) {
   @import "mobile/index";
-  /*@import "path/mobile";*/
   #container, #masthead, #masthead .heading, .container, #footer {
     width: @4cols;
   }
+  .radial-mobile;
+  .radial-menu(@x-action1-mobile, @x-action2-mobile, @x-action3-mobile, @x-action4-mobile, @x-action5-mobile, @x-action6-mobile, @y-action1-mobile, @y-action2-mobile, @y-action3-mobile, @y-action4-mobile, @y-action4-mobile, @y-action5-mobile,  @y-action6-mobile);
 }
 
 
@@ -241,6 +244,22 @@ body {
   #container, #masthead, #masthead .heading, .container, #footer {
     width: @8cols;
   }
+
+  
+/*  @x-action1: 198px;
+  @x-action2: 185px;
+  @x-action3: 159px;
+  @x-action4: 122px;
+  @x-action5: 77px;
+  @x-action6: 26px;
+
+  @y-action1: -26px;
+  @y-action2: -77px;
+  @y-action3: -122px;
+  @y-action4: -159px;
+  @y-action5: -185px;
+  @y-action6: -198px;
+  .radial-menu;*/
 }
 
 
@@ -275,4 +294,3 @@ body {
 }
 
 
-@import "path/index";

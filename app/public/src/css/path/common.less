@@ -1,0 +1,148 @@
+#menu {
+  display: none;
+  z-index: 30;
+}
+
+.items {
+  .action2, .action4, .action5 {
+    display: none
+  }
+}
+
+/* line 24, ../sass/_layout.scss */
+#menu:checked ~ label .circle {
+  -moz-transform: rotate(0deg);
+  -webkit-transform: rotate(0deg);
+  -o-transform: rotate(0deg);
+  -ms-transform: rotate(0deg);
+  transform: rotate(0deg);
+}
+
+
+/* line 30, ../sass/_layout.scss */
+@circle-bottom: 1em;
+@circle-left: 1em;
+@circle-height: 40/@em;
+@circle-width: 40/@em;
+
+.circle-container {
+  position: fixed;
+  bottom: @circle-bottom;
+  left: @circle-left;
+  height: @circle-height;
+  width: @circle-width;
+  z-index: 30;
+  -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+  -o-box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+  -moz-border-radius: @circle-height;
+  -webkit-border-radius: @circle-height;
+  -o-border-radius: @circle-height;
+  -ms-border-radius: @circle-height;
+  -khtml-border-radius: @circle-height;
+  border-radius: @circle-height;
+}
+/* line 34, ../sass/_layout.scss */
+.circle-container .circle {
+  position: fixed;
+  /*bottom: 10px;*/
+  /*left: 10px;*/
+  bottom: @circle-bottom;
+  left: @circle-left;
+  height: @circle-height;
+  width: @circle-width;
+  cursor: pointer;
+  z-index: 30;
+  border: 0px;
+  /*font-size: 30/@em;*/
+  /*line-height: 40/@em;*/
+  line-height: 26px;
+  font-size: 18px;
+  text-align: center;
+  color: white;
+  padding: 0px;
+  -moz-transition: all 0.2s linear;
+  -webkit-transition: all 0.2s linear;
+  -o-transition: all 0.2s linear;
+  transition: all 0.2s linear;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e85738), color-stop(100%, #cb2c16));
+  background-image: -webkit-linear-gradient(top, #e85738, #cb2c16);
+  background-image: -moz-linear-gradient(top, #e85738, #cb2c16);
+  background-image: -o-linear-gradient(top, #e85738, #cb2c16);
+  background-image: -ms-linear-gradient(top, #e85738, #cb2c16);
+  background-image: linear-gradient(top, #e85738, #cb2c16);
+  -moz-box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.3);
+  -o-box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.3);
+  -moz-border-radius: @circle-height;
+  -webkit-border-radius: @circle-height;
+  -o-border-radius: @circle-height;
+  -ms-border-radius: @circle-height;
+  -khtml-border-radius: @circle-height;
+  border-radius: @circle-height;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  -moz-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+/* line 52, ../sass/_layout.scss */
+.circle-container .circle:active:before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  background: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  -moz-border-radius: 25px;
+  -webkit-border-radius: 25px;
+  -o-border-radius: 25px;
+  -ms-border-radius: 25px;
+  -khtml-border-radius: 25px;
+  border-radius: 25px;
+}
+
+/* line 65, ../sass/_layout.scss */
+.items li {
+  position: fixed;
+  z-index: 2;
+  /*bottom: 20px;*/
+  /*left: 20px;*/
+  bottom: @circle-bottom + .5em;
+  left: @circle-left + .5em;
+  display: block;
+  height: 26px;
+  width: 26px;
+  color: white;
+  text-align: center;
+  line-height: 26px;
+  font-size: 18px;
+  -moz-box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.3), inset 0 0 1px black;
+  -webkit-box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.3), inset 0 0 1px black;
+  -o-box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.3), inset 0 0 1px black;
+  box-shadow: 0 0 0 4px white, 0 0 0 5px rgba(0, 0, 0, 0.3), inset 0 0 1px black;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #433f3c), color-stop(100%, #44403d));
+  background-image: -webkit-linear-gradient(top, #433f3c, #44403d);
+  background-image: -moz-linear-gradient(top, #433f3c, #44403d);
+  background-image: -o-linear-gradient(top, #433f3c, #44403d);
+  background-image: -ms-linear-gradient(top, #433f3c, #44403d);
+  background-image: linear-gradient(top, #433f3c, #44403d);
+  -moz-border-radius: 13px;
+  -webkit-border-radius: 13px;
+  -o-border-radius: 13px;
+  -ms-border-radius: 13px;
+  -khtml-border-radius: 13px;
+  border-radius: 13px;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
