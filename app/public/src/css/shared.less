@@ -28,6 +28,7 @@ a {
   max-width: none;
   padding-left: 0;
   padding-right: 0;
+  z-index: 1;
 }
 
 #masthead, .container, #footer {
@@ -118,18 +119,25 @@ a {
 }
 
 .container {
-  margin-top: 36/@em;
+  padding-top: 36/@em;
 }
 
-section#play, section#play2 {
-  height: 16/@em;
-  line-height: 16/@em;
+section#play {
+  height: 32/@em;
+  line-height: 32/@em;
   border-right: 1px solid gray;
   border-bottom: 1px solid gray;
   border-left: 1px solid gray;
-}
+  padding-bottom: .2em;
 
-section#play2 {
-  height: 32/@em;
-  line-height: 32/@em;
+  #stats {
+    .stat {
+      float: left;
+      margin-right: .3em;
+      font-size: 1.25em;
+    }
+    #purse_value {
+      line-height: 1.8em;
+    }
+  }
 }
