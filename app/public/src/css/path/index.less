@@ -4,8 +4,12 @@
 }
 
 .items {
-  .action2, .action4, .action6 {
+  /*.action2, .action4, .action6 {*/
+/*  .action1, .action3, .action5 {
     display: none;
+  }*/
+  .action2, .action4, .action6 {
+    display: none
   }
 }
 
@@ -147,7 +151,7 @@
 }
 
 /* line 27, ../sass/app.scss */
-#menu:checked ~ .items li:nth-child(1) {
+#menu:checked ~ .items li.action1 {
   -webkit-animation-name: "appear-'1'";
   -webkit-animation-duration: 240ms;
   -webkit-animation-iteration-count: 1;
@@ -156,7 +160,7 @@
 }
 
 /* line 35, ../sass/app.scss */
-#menu:not(:checked) ~ .items li:nth-child(1) {
+#menu:not(:checked) ~ .items li.action1 {
   -webkit-animation-name: "disappear-'1'";
   -webkit-animation-duration: 387.5ms;
   -webkit-animation-iteration-count: 1;
@@ -173,25 +177,25 @@
   /* line 52, ../sass/app.scss */
   80% {
     -webkit-animation-timing-function: cubic-bezier(0.45, 0.97, 0.51, 0.78);
-    -webkit-transform: translate3d(228px, -30px, 0px) rotateZ(0deg);
+    -webkit-transform: translate3d(@x-action1 + 20px, @y-action1 - 4px, 0px) rotateZ(0deg);
   }
 
   /* line 56, ../sass/app.scss */
   100% {
-    -webkit-transform: translate3d(198px, -26px, 0px);
+    -webkit-transform: translate3d(@x-action1, @y-action1, 0px);
   }
 }
 
 @-webkit-keyframes "disappear-'1'" {
   /* line 62, ../sass/app.scss */
   0% {
-    -webkit-transform: translate3d(198px, -26px, 0px) rotateZ(0deg);
+    -webkit-transform: translate3d(@x-action1, @y-action1, 0px) rotateZ(0deg);
     -webkit-animation-timing-function: cubic-bezier(1, 0.6, 0.57, 0.75);
   }
 
   /* line 66, ../sass/app.scss */
   70% {
-    -webkit-transform: translate3d(228px, -30px, 0px) rotateZ(360deg);
+    -webkit-transform: translate3d(@x-action1 + 20px, @y-action1 - 4px, 0px) rotateZ(360deg);
     -webkit-animation-timing-function: cubic-bezier(0.45, 0.97, 0.51, 0.78);
   }
 
@@ -202,7 +206,7 @@
 }
 
 /* line 27, ../sass/app.scss */
-#menu:checked ~ .items li:nth-child(2) {
+#menu:checked ~ .items li.action2 {
   -webkit-animation-name: "appear-'2'";
   -webkit-animation-duration: 240ms;
   -webkit-animation-iteration-count: 1;
@@ -211,7 +215,7 @@
 }
 
 /* line 35, ../sass/app.scss */
-#menu:not(:checked) ~ .items li:nth-child(2) {
+#menu:not(:checked) ~ .items li.action2 {
   -webkit-animation-name: "disappear-'2'";
   -webkit-animation-duration: 411.125ms;
   -webkit-animation-iteration-count: 1;
@@ -228,25 +232,25 @@
   /* line 52, ../sass/app.scss */
   80% {
     -webkit-animation-timing-function: cubic-bezier(0.45, 0.97, 0.51, 0.78);
-    -webkit-transform: translate3d(213px, -89px, 0px) rotateZ(0deg);
+    -webkit-transform: translate3d(@x-action2 + 28px, @y-action2 - 12px, 0px) rotateZ(0deg);
   }
 
   /* line 56, ../sass/app.scss */
   100% {
-    -webkit-transform: translate3d(185px, -77px, 0px);
+    -webkit-transform: translate3d(@x-action2, @y-action2, 0px);
   }
 }
 
 @-webkit-keyframes "disappear-'2'" {
   /* line 62, ../sass/app.scss */
   0% {
-    -webkit-transform: translate3d(185px, -77px, 0px) rotateZ(0deg);
+    -webkit-transform: translate3d(@x-action2, @y-action2, 0px) rotateZ(0deg);
     -webkit-animation-timing-function: cubic-bezier(1, 0.6, 0.57, 0.75);
   }
 
   /* line 66, ../sass/app.scss */
   70% {
-    -webkit-transform: translate3d(213px, -89px, 0px) rotateZ(360deg);
+    -webkit-transform: translate3d(@x-action2 + 28px, @y-action2 - 12px, 0px) rotateZ(360deg);
     -webkit-animation-timing-function: cubic-bezier(0.45, 0.97, 0.51, 0.78);
   }
 
@@ -257,7 +261,7 @@
 }
 
 /* line 27, ../sass/app.scss */
-#menu:checked ~ .items li:nth-child(3) {
+#menu:checked ~ .items li.action3 {
   -webkit-animation-name: "appear-'3'";
   -webkit-animation-duration: 240ms;
   -webkit-animation-iteration-count: 1;
@@ -266,7 +270,7 @@
 }
 
 /* line 35, ../sass/app.scss */
-#menu:not(:checked) ~ .items li:nth-child(3) {
+#menu:not(:checked) ~ .items li.action3 {
   -webkit-animation-name: "disappear-'3'";
   -webkit-animation-duration: 443.019ms;
   -webkit-animation-iteration-count: 1;
@@ -283,25 +287,25 @@
   /* line 52, ../sass/app.scss */
   80% {
     -webkit-animation-timing-function: cubic-bezier(0.45, 0.97, 0.51, 0.78);
-    -webkit-transform: translate3d(183px, -140px, 0px) rotateZ(0deg);
+    -webkit-transform: translate3d(@x-action3 + 12px, @y-action3 - 9px, 0px) rotateZ(0deg);
   }
 
   /* line 56, ../sass/app.scss */
   100% {
-    -webkit-transform: translate3d(159px, -122px, 0px);
+    -webkit-transform: translate3d(@x-action3, @y-action3, 0px);
   }
 }
 
 @-webkit-keyframes "disappear-'3'" {
   /* line 62, ../sass/app.scss */
   0% {
-    -webkit-transform: translate3d(159px, -122px, 0px) rotateZ(0deg);
+    -webkit-transform: translate3d(@x-action3, @y-action3, 0px) rotateZ(0deg);
     -webkit-animation-timing-function: cubic-bezier(1, 0.6, 0.57, 0.75);
   }
 
   /* line 66, ../sass/app.scss */
   70% {
-    -webkit-transform: translate3d(183px, -140px, 0px) rotateZ(360deg);
+    -webkit-transform: translate3d(@x-action3 + 12px, @y-action3 - 9px, 0px) rotateZ(360deg);
     -webkit-animation-timing-function: cubic-bezier(0.45, 0.97, 0.51, 0.78);
   }
 
@@ -312,7 +316,7 @@
 }
 
 /* line 27, ../sass/app.scss */
-#menu:checked ~ .items li:nth-child(4) {
+#menu:checked ~ .items li.action4 {
   -webkit-animation-name: "appear-'4'";
   -webkit-animation-duration: 240ms;
   -webkit-animation-iteration-count: 1;
@@ -321,7 +325,7 @@
 }
 
 /* line 35, ../sass/app.scss */
-#menu:not(:checked) ~ .items li:nth-child(4) {
+#menu:not(:checked) ~ .items li.action4 {
   -webkit-animation-name: "disappear-'4'";
   -webkit-animation-duration: 486.075ms;
   -webkit-animation-iteration-count: 1;
@@ -338,25 +342,25 @@
   /* line 52, ../sass/app.scss */
   80% {
     -webkit-animation-timing-function: cubic-bezier(0.45, 0.97, 0.51, 0.78);
-    -webkit-transform: translate3d(140px, -183px, 0px) rotateZ(0deg);
+    -webkit-transform: translate3d(@x-action4 + 9px, @y-action4 - 12px, 0px) rotateZ(0deg);
   }
 
   /* line 56, ../sass/app.scss */
   100% {
-    -webkit-transform: translate3d(122px, -159px, 0px);
+    -webkit-transform: translate3d(@x-action4, @y-action4, 0px);
   }
 }
 
 @-webkit-keyframes "disappear-'4'" {
   /* line 62, ../sass/app.scss */
   0% {
-    -webkit-transform: translate3d(122px, -159px, 0px) rotateZ(0deg);
+    -webkit-transform: translate3d(@x-action4, @y-action4, 0px) rotateZ(0deg);
     -webkit-animation-timing-function: cubic-bezier(1, 0.6, 0.57, 0.75);
   }
 
   /* line 66, ../sass/app.scss */
   70% {
-    -webkit-transform: translate3d(140px, -183px, 0px) rotateZ(360deg);
+    -webkit-transform: translate3d(@x-action4 + 9px, @y-action4 - 12px, 0px) rotateZ(360deg);
     -webkit-animation-timing-function: cubic-bezier(0.45, 0.97, 0.51, 0.78);
   }
 
@@ -367,7 +371,7 @@
 }
 
 /* line 27, ../sass/app.scss */
-#menu:checked ~ .items li:nth-child(5) {
+#menu:checked ~ .items li.action5 {
   -webkit-animation-name: "appear-'5'";
   -webkit-animation-duration: 240ms;
   -webkit-animation-iteration-count: 1;
@@ -376,7 +380,7 @@
 }
 
 /* line 35, ../sass/app.scss */
-#menu:not(:checked) ~ .items li:nth-child(5) {
+#menu:not(:checked) ~ .items li.action5 {
   -webkit-animation-name: "disappear-'5'";
   -webkit-animation-duration: 544.202ms;
   -webkit-animation-iteration-count: 1;
@@ -393,25 +397,25 @@
   /* line 52, ../sass/app.scss */
   80% {
     -webkit-animation-timing-function: cubic-bezier(0.45, 0.97, 0.51, 0.78);
-    -webkit-transform: translate3d(89px, -213px, 0px) rotateZ(0deg);
+    -webkit-transform: translate3d(@x-action5 + 6px, @y-action5 - 14px, 0px) rotateZ(0deg);
   }
 
   /* line 56, ../sass/app.scss */
   100% {
-    -webkit-transform: translate3d(77px, -185px, 0px);
+    -webkit-transform: translate3d(@x-action5, @y-action5, 0px);
   }
 }
 
 @-webkit-keyframes "disappear-'5'" {
   /* line 62, ../sass/app.scss */
   0% {
-    -webkit-transform: translate3d(77px, -185px, 0px) rotateZ(0deg);
+    -webkit-transform: translate3d(@x-action5, @y-action5, 0px) rotateZ(0deg);
     -webkit-animation-timing-function: cubic-bezier(1, 0.6, 0.57, 0.75);
   }
 
   /* line 66, ../sass/app.scss */
   70% {
-    -webkit-transform: translate3d(89px, -213px, 0px) rotateZ(360deg);
+    -webkit-transform: translate3d(@x-action5 + 6px, @y-action5 - 14px, 0px) rotateZ(360deg);
     -webkit-animation-timing-function: cubic-bezier(0.45, 0.97, 0.51, 0.78);
   }
 
@@ -422,7 +426,8 @@
 }
 
 /* line 27, ../sass/app.scss */
-#menu:checked ~ .items li:nth-child(6) {
+/*#menu:checked ~ .items li:nth-child(6) {*/
+#menu:checked ~ .items li.action6 {
   -webkit-animation-name: "appear-'6'";
   -webkit-animation-duration: 240ms;
   -webkit-animation-iteration-count: 1;
@@ -431,7 +436,8 @@
 }
 
 /* line 35, ../sass/app.scss */
-#menu:not(:checked) ~ .items li:nth-child(6) {
+/*#menu:not(:checked) ~ .items li:nth-child(6) {*/
+#menu:not(:checked) ~ .items li.action6 {
   -webkit-animation-name: "disappear-'6'";
   -webkit-animation-duration: 622.672ms;
   -webkit-animation-iteration-count: 1;
@@ -448,25 +454,25 @@
   /* line 52, ../sass/app.scss */
   80% {
     -webkit-animation-timing-function: cubic-bezier(0.45, 0.97, 0.51, 0.78);
-    -webkit-transform: translate3d(30px, -228px, 0px) rotateZ(0deg);
+    -webkit-transform: translate3d(@x-action6 + 2px, @y-action6 - 15px, 0px) rotateZ(0deg);
   }
 
   /* line 56, ../sass/app.scss */
   100% {
-    -webkit-transform: translate3d(26px, -198px, 0px);
+    -webkit-transform: translate3d(@x-action6, @y-action6, 0px);
   }
 }
 
 @-webkit-keyframes "disappear-'6'" {
   /* line 62, ../sass/app.scss */
   0% {
-    -webkit-transform: translate3d(26px, -198px, 0px) rotateZ(0deg);
+    -webkit-transform: translate3d(@x-action6, @y-action6, 0px) rotateZ(0deg);
     -webkit-animation-timing-function: cubic-bezier(1, 0.6, 0.57, 0.75);
   }
 
   /* line 66, ../sass/app.scss */
   70% {
-    -webkit-transform: translate3d(30px, -228px, 0px) rotateZ(360deg);
+    -webkit-transform: translate3d(@x-action6 + 2px, @y-action6 - 15px, 0px) rotateZ(360deg);
     -webkit-animation-timing-function: cubic-bezier(0.45, 0.97, 0.51, 0.78);
   }
 

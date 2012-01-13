@@ -201,9 +201,7 @@ body {
 */
 @import "colors";
 @import "shared";
-@import "path";
-
-
+@import "path/defaults";
 
 /*
   Mobile layout 
@@ -213,6 +211,7 @@ body {
 
 @media screen and (min-width: 15em) {
   @import "mobile/index";
+  /*@import "path/mobile";*/
   #container, #masthead, #masthead .heading, .container, #footer {
     width: @4cols;
   }
@@ -274,3 +273,6 @@ body {
     width: @13cols+@13cols+(24/@em);
   }
 }
+
+
+@import "path/index";
