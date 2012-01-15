@@ -1,3 +1,8 @@
+# class Blackjack
+
+
+# window.Blackjack = Blackjack
+
 $(document).ready(() ->
   console.log("page loaded")
 

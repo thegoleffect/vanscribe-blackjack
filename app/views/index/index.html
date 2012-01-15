@@ -20,9 +20,7 @@
   </div>
 
   <div class="table">
-    {{#dealer}}
-      {{> blackjack-player }}
-    {{/dealer}}
+    {{> blackjack-dealer }}
 
     {{#current_player}}
       {{> blackjack-player }}
@@ -36,8 +34,8 @@
 
   
   <nav id="bet">
-    <div class="bet_value">100</div>
-    <a href="#">Bet</a>
+    <div class="label">Bet</div>
+    <a href="#">100</a>
     <ul>
       <li><a href="#">Min</a></li>
       <li><a href="#">+10</a></li>
@@ -48,6 +46,7 @@
     </ul>
   </nav>
   <nav id="actions">
+    <div class="label">Actions</div>
     <a href="#">+</a>
     <ul>
       <li><a href="#">H</a></li>

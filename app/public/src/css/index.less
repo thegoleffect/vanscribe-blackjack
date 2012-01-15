@@ -281,29 +281,46 @@ a {
 }
 
 //* experimentation */
+@label-width: 40/@em;
 nav {
   position:fixed;
   bottom: 30/@em;
   background:#F00;
   z-index: 2000000001;
 
-  .bet_value {
-    @bet-width: 40/@em;
+  .label {
     position: absolute;
     font-family: @museo;
     font-weight: 700;
-    width: @bet-width;
-    left: -@bet-width / 2;
-    bottom: 30px;
-    text-align: center;
+    bottom: 25/@em;
+    /*background-color: rgba(255,0,0, 1);*/
+    color: #ccc;
+    padding: 4/@em;
+    @label-radius: 8px;
+    border: 2px solid white;
+    -webkit-border-radius: @label-radius;
+    -moz-border-radius: @label-radius;
+    border-radius: @label-radius;
+    box-shadow: 0 0 2px hsla(0,0%,0%,0.4);
   }
 }
 
 nav#bet {
   left: 30/@em;
+
+  .label {
+    /*width: @label-width;*/
+    left: -@label-width / 2;
+    text-align: center;
+  }
 }
 nav#actions {
   right: 30/@em;
+
+  .label {
+    right: -@label-width / 2;
+    text-align: left;
+  }
 }
 nav#actions > a {
   font-size: 40px;
@@ -333,7 +350,7 @@ nav > a {
   color:#FFF;
   text-decoration:none;
   border:3px solid #FFF;
-  box-shadow: 0 0 2px hsla(0,0%,0%,0.6);
+  box-shadow: 2px 2px 2px hsla(0,0%,0%,0.4);
 }
 
 nav ul {

@@ -9,6 +9,15 @@
   float: left;
 }
 
+.noscript {
+  text-align: center;
+  font-weight: 700;
+  color: red;
+  width: @4cols;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
 a {
   color: @color-anchor;
   text-decoration: none;
@@ -209,12 +218,16 @@ section#play {
         margin-left: 10/@em;
         text-shadow: 1px 1px 2px #333;
       }
-
+      
+      .user, .hand {
+        margin-right: @gutter / @em;
+      }
       .user {
         width: @2cols;
         height: @player-height;
-        overflow: hidden; 
+        /*overflow: hidden; */
         float: left;
+        z-index: 5;
 
         .avatar {
           @avatar-width: 24/@em;
@@ -247,6 +260,7 @@ section#play {
           margin-top: 4px;
           float: left;
         }
+        /* z-index: 6; */
       }
     }
   }

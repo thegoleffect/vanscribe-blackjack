@@ -5,6 +5,7 @@ express = require('express')
 hogan = require("hogan.js")
 hogan_adapter = require("./lib/hogan-express")
 n2o = require("nitrous")
+nowjs = require("now")
 redis = require("redis")
 sharejs = require("share").server
 url = require("url")
@@ -63,18 +64,18 @@ class WebServer #extends backbone.Model
       'session': (req, res) -> return req.session
     })
 
-    share_options = {
-      db: {
-        type: "redis",
-      },
-      # browserchannel: {},
-      # socketio: null,
-      auth: (client, action) ->
-        console.log(client)
-        action.accept()
-    }
-    _.extend(share_options.db, app.config.redisConfig)
-    sharejs.attach(app, share_options)
+    # share_options = {
+    #   db: {
+    #     type: "redis",
+    #   },
+    #   auth: (client, action) ->
+    #     console.log(client)
+    #     action.accept()
+    # }
+    # _.extend(share_options.db, app.config.redisConfig)
+    # sharejs.attach(app, share_options)
+
+    @everyone = nowjs.initialize(app)
     
     app.listen(app.config.port, () ->
       console.log("listening on port #{app.config.port}")
@@ -83,6 +84,7 @@ class WebServer #extends backbone.Model
       console.log("server closed")
     )
   stop: () ->
+    nowjs.server.close()
     @app.close()
 
   restart: () ->
@@ -103,28 +105,5 @@ module.exports = app
 #   app.use(express.errorHandler())
 # )
 
-
-# app.get("/config", (req, res) ->
-#   secret = req.param("secret", "")
-#   if secret != "hippo"
-#     res.send("Not found", 404)
-#   else
-#     output = {
-#       env: process.env,
-#     }
-#     res.psend(output)
-# )
-
-# app.get("/session", (req, res) ->
-#   res.psend(req.session)
-# )
-
-
-# app.listen(app.config.port, () ->
-#   console.log("listening on port #{app.config.port}")
-# )
-# app.on("close", () ->
-#   console.log("server closed")
-# )
 
 module.exports = app

@@ -1,7 +1,6 @@
 handlers = require("../lib/assets")
 path = require("path")
 root = path.join(__dirname, "../../")
-
 module.exports = {
   js: {
     "route": /\/static\/js\/[a-z0-9]+\/.*\.js/,
@@ -10,16 +9,9 @@ module.exports = {
     "dataType": "javascript",
     "files": [
       # "https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js",
-      # "http://localhost:#{process.port}/nowjs/now.js",
-      # "../../js/bootstrap-dropdown.js"
-      # "../../js/injected.js",
-      # "js/bootstrap-dropdown.js",
-      # "js/bootstrap-alerts.js",
-      # "../../js/plugins.js",
+      "http://localhost:#{process.env.PORT}/nowjs/now.js",
       "../../js/libs/radial-menu.js",
       "../../.app.coffee",
-      # "../../js/prettify.js"
-      # "../../js/css_browser_selector.js"
     ],
     "preManipulate": {
       "^": [ handlers.coffeeRenderer ]
