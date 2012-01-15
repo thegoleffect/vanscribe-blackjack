@@ -1,51 +1,61 @@
+_ = require("underscore")
 express = require("express")
 path = require("path")
+redis = require("redis")
 url = require("url")
+util = require("util")
 
-settings = {
-  # assetsSettings: assetSettings,
-  debug: true,
-  # external: authentication,
-  logger: {
-    format: ":response-time ms - :date - :req[x-real-ip] - :method :url :user-agent / :referrer"
-  },
-  session: {
-    secret: "44efd9e97f648d45988924f507dce7df"
-  },
-}
+config = require("./config")
 
-settings.port = process.env.PORT || 3000
-process.env.PORT ?= settings.port
+init_settings = (app) ->
+  settings = config
 
-settings.assets = require("./assets") if path.existsSync(path.join(__dirname, "./assets.coffee"))
+  app.redis ?= {}
+  for own name, hosturl of settings.databases.redis
+    app.redis[name] = initialize_redis_client(hosturl)
 
-if process.env.REDISTOGO_URL?
-  settings.redisConfig = redisConfig = url.parse(process.env.REDISTOGO_URL)
+  init_redis_session(app, settings, settings.sessions.redis)
+  console.log('initialized settings')
+  return settings
+
+parse_redis_url = _.memoize((hosturl) ->
+  redisConfig = url.parse(hosturl)
   [redisConfig.db, redisConfig.pass] = redisConfig.auth.split(":")
-  settings.session.store = (app) ->
-    return {
-      secret: settings.session.secret,
+  return redisConfig
+)
+
+initialize_redis_client = (config, callback = null) ->
+  config = parse_redis_url(config) if typeof config == "string"
+
+  client = redis.createClient(config.port, config.hostname)
+  client.auth(config.pass, (err) ->
+    throw err if err
+    callback(err, client) if callback?
+  )
+  return client
+
+init_redis_session = (app, settings, hosturl = null) ->
+  settings.session ?= {}
+  
+  if hosturl?
+    config = parse_redis_url(hosturl)
+    settings.session.store = {
+      secret: settings.sessions.secret,
       store: new app.redisStore({
-        host: redisConfig.hostname,
-        port: redisConfig.port,
-        # db: redisConfig.db,
-        pass: redisConfig.pass
+        host: config.hostname,
+        port: config.port,
+        pass: config.pass
       })
     }
-else
-  settings.session.store = (app) ->
-    return {
-      secret: settings.session.secret,
+  else
+    util.debug("falling back to session MemoryStore()")
+    settings.session.store = {
+      secret: settings.sessions.secret,
       store: new express.session.MemoryStore()
     }
+  
+  app.session = settings.session.store
+  app.session_store = settings.session.store.store
 
 
-if process.env.NODE_ENV == "production"
-  # do stuff to settings
-else
-  # do stuff to settings
-
-# assetSettings = require("./assetmanager")
-# settings.assetsSettings = assetSettings
-
-module.exports = settings
+module.exports = init_settings

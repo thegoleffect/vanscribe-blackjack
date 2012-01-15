@@ -6,7 +6,7 @@ path = require("path")
 util = require("util")
 {exec, spawn} = require("child_process")
 
-settings = require("../app/config/index")
+settings = require("../app/config/config")
 Traversal = require("../app/lib/traversal")
 root_path = path.join(__dirname, "../")
 

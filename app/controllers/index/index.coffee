@@ -1,8 +1,24 @@
+async = require("async")
+
 module.exports.get = (req, res) ->
+  Username = new req.Models.common.username(req.redis.client)
+
+
+  # if not req.session.username?
+  #   setup = [
+  #     ((callback) ->
+  #       Username.new((err, username) ->
+
+  #     ))
+  #   ]
+  # else
+  #   setup = [
+  #     ((callback) ->
+
+  #     )
+  #   ]
+  
   res.render("index/index", {
-    dealer: {
-      username: "Dealer"
-    }
     current_player: {
       username: "vanscribe",
       purse: 500,
@@ -14,6 +30,9 @@ module.exports.get = (req, res) ->
       {username: "EnviousElla2", purse: 500}
     ]
   })
+
+    
+  
 
 module.exports.heartbeat = (req, res) -> 
   res.send("1")

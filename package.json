@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "dependencies": {
     "backbone": "0.5.3",
+    "bcrypt": "0.4.1",
     "browserchannel": "0.3.2",
     "coffee-script": "1.2.0",
     "connect-assetmanager": "0.0.24",
