@@ -8,8 +8,10 @@ module.exports.get = (req, res) ->
       purse: 500,
     }
     players: [
-      {username: "BustyBunny86", purse: 500}
-      {username: "CunningChris76", purse: 500}
+      {username: "BustyBunny86", purse: 500},
+      {username: "CunningChris76", purse: 500},
+      {username: "DirtyDave27", purse: 500},
+      {username: "EnviousElla2", purse: 500}
     ]
   })
 
