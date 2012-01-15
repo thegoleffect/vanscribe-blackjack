@@ -10,13 +10,15 @@ UsernameModel = require("../app/models/common/username")
 
 # Global Configuration
 RC = init_redis(hosturl)
-client = redisClient(RC)
-key = ":debug:sets:usernames"
+rclient = redisClient(RC)
+prefix = ":debug"
+sid = "LdqPgucOh4SghklDjSriVLgr.aoAYxRDM0FtuXsqCUfv4y7pKBjedBa8+1XAOq6g9DQM"
 
 
-describe("UsernameGenerator", () ->
+describe("Username", () ->
+  Username = new UsernameModel(rclient, prefix)
+
   beforeEach((done) ->
-    # switched to shared, persistent redis connection
     done()
   )
   afterEach((done) ->
@@ -25,7 +27,7 @@ describe("UsernameGenerator", () ->
 
   it("should have access to redis in unittests", (done) ->
     (() ->
-      client.keys(":debug:hippo", (err, keys) ->
+      rclient.keys(":debug:hippo", (err, keys) ->
         should.not.exist(err)
       )
     ).should.not.throw()
@@ -33,16 +35,11 @@ describe("UsernameGenerator", () ->
   )
 
   it("should instantiate", (done) ->
-    Username = null
-    (() ->
-      Username = new UsernameModel(client, key)
-      should.exist(Username)
-    ).should.not.throw()
+    should.exist(Username)
     done()
   )
 
   it("should generate a valid username", (done) ->
-    Username = new UsernameModel(client, key)
     name = Username.random()
     should.exist(name)
     name.should.be.a("string")
@@ -52,8 +49,7 @@ describe("UsernameGenerator", () ->
   )
 
   it("should generate unique usernames and delete them", (done) ->
-    Username = new UsernameModel(client, key)
-    Username.create((err, username) ->
+    Username.create(sid, (err, username) ->
       should.not.exist(err)
       should.exist(username)
 
