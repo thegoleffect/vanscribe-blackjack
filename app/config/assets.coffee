@@ -1,7 +1,8 @@
 handlers = require("../lib/assets")
 path = require("path")
 root = path.join(__dirname, "../../")
-module.exports = {
+
+assetSettings = {
   js: {
     "route": /\/static\/js\/[a-z0-9]+\/.*\.js/,
     "path": path.join(root, "./app/public/src/js/"),
@@ -49,3 +50,10 @@ module.exports = {
     }
   }
 }
+if process.env.NODE_ENV == "production"
+  assetSettings.js.files.unshift("http://blackjack.vanscribe.com/nowjs/now.js")
+else
+  assetSettings.js.files.unshift("http://localhost:#{process.env.PORT}/nowjs/now.js")
+
+
+module.exports = assetSettings

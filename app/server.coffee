@@ -75,7 +75,10 @@ class WebServer #extends backbone.Model
     # _.extend(share_options.db, app.config.redisConfig)
     # sharejs.attach(app, share_options)
 
-    @everyone = nowjs.initialize(app)
+    @everyone = nowjs.initialize(app, {socketio: {transports:['xhr-polling','jsonp-polling']}})
+    # nowjs.on("connect", () ->
+      
+    # )
     
     app.listen(app.config.port, () ->
       console.log("listening on port #{app.config.port}")
