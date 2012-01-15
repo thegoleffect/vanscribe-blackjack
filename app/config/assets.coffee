@@ -9,13 +9,14 @@ module.exports = {
     "aggregate_file": "../../.app.coffee"
     "dataType": "javascript",
     "files": [
-      "https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js",
+      # "https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js",
       # "http://localhost:#{process.port}/nowjs/now.js",
       # "../../js/bootstrap-dropdown.js"
       # "../../js/injected.js",
       # "js/bootstrap-dropdown.js",
       # "js/bootstrap-alerts.js",
-      "../../.app.coffee"
+      "../../.app.coffee",
+      "../../js/libs/radial-menu.js",
       # "../../js/prettify.js"
       # "../../js/css_browser_selector.js"
     ],
