@@ -1,11 +1,39 @@
 <section id="play">
-  <div id="stats">
-    <div class="purse">
-      <img class="stat" src="/img/icons/coins.png" alt="Coins">
-      <div class="stat" id="purse_value">$ 500</div>
+  <div class="menu">
+    <div id="stats">
+      <div class="purse statholder stackable">
+        <div class="stat icon stackable"><img class="" src="/img/icons/coins.png" alt="Coins"></div>
+        <div class="stat stackable" id="purse_value"><span class="menutext">500</span></div>
+        <div class="clear"></div>
+      </div>
+
+      <div class="divider stackable">&nbsp;</div>
+
+      <div class="leaderboards statholder stackable">
+        <div class="stat icon stackable"><a href="#"><img class="" src="/img/icons/trophy.png" alt="Leaderboard Trophy"></a></div>
+        <div class="stat stackable"><a href="#">Leaderboards</a></div>
+        <div class="clear"></div>
+      </div>
       <div class="clear"></div>
     </div>
+    <div class="clear"></div>
   </div>
+
+  <div class="table">
+    {{#dealer}}
+      {{> blackjack-player }}
+    {{/dealer}}
+
+    {{#current_player}}
+      {{> blackjack-player }}
+    {{/current_player}}
+
+    {{#players}}
+      {{> blackjack-player }}
+    {{/players}}
+    <div class="clear"></div>
+  </div>
+
   
   <nav>
     <a href="#">+</a>
@@ -17,7 +45,7 @@
       <!-- <li><a href="#">&hearts;</a></li> -->
       <!-- <li><a href="#">&#x263A;</a></li> -->
     </ul>
-  </nav>  
+  </nav>
 </section>
 
 <section id="test">
@@ -27,11 +55,37 @@
     <div class="col col3"></div>
     <div class="col col4"></div>
     <div class="col col5"></div>
+    <div class="col col6"></div>
+    <div class="col col7"></div>
+    <div class="col col8"></div>
+    <div class="col col9"></div>
+    <div class="col col10"></div>
+    <div class="col col11"></div>
+    <div class="col col12"></div>
+    <div class="col col13"></div>
+    <div class="col col14"></div>
+    <div class="col col15"></div>
+    <div class="col col16"></div>
+    <div class="col col17"></div>
+    <div class="col col18"></div>
     <div class="col col19"></div>
     <div class="col col20"></div>
     <div class="col col21"></div>
     <div class="col col22"></div>
     <div class="col col23"></div>
+    <div class="col col24"></div>
+    <div class="col col25"></div>
+    <div class="col col26"></div>
+    <div class="col col27"></div>
+    <div class="col col28"></div>
+    <div class="col col29"></div>
+    <div class="col col30"></div>
+    <div class="col col31"></div>
+    <div class="col col32"></div>
+    <div class="col col33"></div>
+    <div class="col col34"></div>
+    <div class="col col35"></div>
+    <div class="col col36"></div>
   </figure>
 </section>
 
