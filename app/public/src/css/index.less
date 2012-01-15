@@ -284,9 +284,30 @@ a {
 nav {
   position:fixed;
   bottom: 30/@em;
-  left: 30/@em;
   background:#F00;
-  z-index: 3;
+  z-index: 2000000001;
+
+  .bet_value {
+    @bet-width: 40/@em;
+    position: absolute;
+    font-family: @museo;
+    font-weight: 700;
+    width: @bet-width;
+    left: -@bet-width / 2;
+    bottom: 30px;
+    text-align: center;
+  }
+}
+
+nav#bet {
+  left: 30/@em;
+}
+nav#actions {
+  right: 30/@em;
+}
+nav#actions > a {
+  font-size: 40px;
+  line-height: 30px;
 }
 
 a {
@@ -298,17 +319,17 @@ nav > a {
   width: 40px;
   height: 40px;
   background: #F00;
-  background: -webkit-linear-gradient(hsla(0,100%,50%,1.0), hsla(0,100%,43%,1.0) 50%, hsla(0,100%,37%,1.0) 50%, hsla(0,100%,30%,1.0));
-  background: -moz-linear-gradient(hsla(0,100%,50%,1.0), hsla(0,100%,43%,1.0) 50%, hsla(0,100%,37%,1.0) 50%, hsla(0,100%,30%,1.0));
+  /*background: -webkit-linear-gradient(hsla(0,100%,50%,1.0), hsla(0,100%,43%,1.0) 50%, hsla(0,100%,37%,1.0) 50%, hsla(0,100%,30%,1.0));*/
+  /*background: -moz-linear-gradient(hsla(0,100%,50%,1.0), hsla(0,100%,43%,1.0) 50%, hsla(0,100%,37%,1.0) 50%, hsla(0,100%,30%,1.0));*/
   bottom: -23px;
   left: -23px;
   z-index: 2;
   border-radius:40px;
-  font-size: 38px;
+  font-size: 18px;
   font-weight:bold;
   font-family: "Helvetica Neue", HelveticaNeue;
   text-align:center;
-  line-height:30px;
+  line-height:38px;
   color:#FFF;
   text-decoration:none;
   border:3px solid #FFF;
