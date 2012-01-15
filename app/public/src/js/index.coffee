@@ -8,4 +8,6 @@ $(document).ready(() ->
     degrees: 90,
     offset: -90
   });`
+
+  return null
 )
