@@ -9,7 +9,7 @@ module.exports = {
     "dataType": "javascript",
     "files": [
       # "https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js",
-      "http://localhost:#{process.env.PORT}/nowjs/now.js",
+      # "http://localhost:#{process.env.PORT}/nowjs/now.js",
       "../../js/libs/radial-menu.js",
       "../../.app.coffee",
     ],
