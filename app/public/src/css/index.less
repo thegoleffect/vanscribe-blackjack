@@ -202,9 +202,9 @@ a {
 @import "colors";
 @import "shared";
 /*@import "path/defaults";*/
-@import "path/common";
+/*@import "path/common";
 @import "path/index";
-@import "path/mobile-triple";
+@import "path/mobile-triple";*/
 
 section#test figure#grid {
   height: @4cols;
@@ -268,8 +268,6 @@ section#test figure#grid {
   #container, #masthead, #masthead .heading, .container, #footer {
     width: @4cols;
   }
-  .radial-mobile;
-  .radial-menu(@x-action1-mobile, @x-action2-mobile, @x-action3-mobile, @x-action4-mobile, @x-action5-mobile, @x-action6-mobile, @y-action1-mobile, @y-action2-mobile, @y-action3-mobile, @y-action4-mobile, @y-action4-mobile, @y-action5-mobile,  @y-action6-mobile);
 }
 
 
@@ -296,21 +294,6 @@ section#test figure#grid {
   #container, #masthead, #masthead .heading, .container, #footer {
     width: @8cols;
   }
-
-  @x-action1-tablet: 198px;
-  @x-action2-tablet: 185px;
-  @x-action3-tablet: 159px;
-  @x-action4-tablet: 122px;
-  @x-action5-tablet: 77px;
-  @x-action6-tablet: 26px;
-
-  @y-action1-tablet: -26px;
-  @y-action2-tablet: -77px;
-  @y-action3-tablet: -122px;
-  @y-action4-tablet: -159px;
-  @y-action5-tablet: -185px;
-  @y-action6-tablet: -198px;
-  .radial-menu(@x-action1-tablet, @x-action2-tablet, @x-action3-tablet, @x-action4-tablet, @x-action5-tablet, @x-action6-tablet, @y-action1-tablet, @y-action2-tablet, @y-action3-tablet, @y-action4-tablet, @y-action4-tablet, @y-action5-tablet,  @y-action6-tablet);
 }
 
 
