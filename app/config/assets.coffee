@@ -15,8 +15,9 @@ module.exports = {
       # "../../js/injected.js",
       # "js/bootstrap-dropdown.js",
       # "js/bootstrap-alerts.js",
-      "../../.app.coffee",
+      # "../../js/plugins.js",
       "../../js/libs/radial-menu.js",
+      "../../.app.coffee",
       # "../../js/prettify.js"
       # "../../js/css_browser_selector.js"
     ],
