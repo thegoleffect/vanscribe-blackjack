@@ -1,38 +1,20 @@
 async = require("async")
 
 module.exports.get = (req, res) ->
-  Username = new req.Models.common.username(req.redis.client)
-
-
-  # if not req.session.username?
-  #   setup = [
-  #     ((callback) ->
-  #       Username.new((err, username) ->
-
-  #     ))
-  #   ]
-  # else
-  #   setup = [
-  #     ((callback) ->
-
-  #     )
-  #   ]
-  
-  res.render("index/index", {
-    current_player: {
-      username: "vanscribe",
-      purse: 500,
-    }
-    players: [
-      {username: "BustyBunny86", purse: 500},
-      {username: "CunningChris76", purse: 500},
-      {username: "DirtyDave27", purse: 500},
-      {username: "EnviousElla2", purse: 500}
-    ]
-  })
-
-    
-  
+  UserModel = new req.UserModel()
+  setup = [
+    (cb) -> UserModel.load(req, (err, user) -> cb(err, user)),
+    (user, cb) -> GamesModel.load(req, user, (err, state) -> cb(err, user, state))
+  ]
+  render = (user, state, cb) ->
+    req.session.username = user.username
+    req.session.table = state.id
+    res.render("index/index", {
+      player: user,
+      table: state
+    })
+  setup.push(render)
+  async.waterfall(setup, (err) -> throw err) # TODO: pretty error handling
 
 module.exports.heartbeat = (req, res) -> 
   res.send("1")

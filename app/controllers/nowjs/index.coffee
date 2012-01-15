@@ -1,4 +1,4 @@
-module.exports = (nowjs, app) ->
+module.exports = (nowjs, nitrous, app) ->
   everyone = nowjs.initialize(app, {socketio: {transports:['websocket', 'xhr-polling','jsonp-polling']}})
 
   nowjs.on("connect", () ->

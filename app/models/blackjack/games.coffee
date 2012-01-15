@@ -17,16 +17,16 @@ class Games
 
   load: (player_id, gid = rack(), callback) ->
     # TODO: fetch gid
-    sharejs.open(gid, "json", (err, doc) ->
-      return callback(err, doc) if err
+    # sharejs.open(gid, "json", (err, doc) ->
+    #   return callback(err, doc) if err
 
-      marvin = new Dealer()
-      if doc.created # new game started
-        #
-      else
-        marvin.load(doc.get())
+    #   marvin = new Dealer()
+    #   if doc.created # new game started
+    #     #
+    #   else
+    #     marvin.load(doc.get())
       
-    )
+    # )
 
 
     # if @active_games[gid]?

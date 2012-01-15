@@ -38,10 +38,17 @@ class WebServer #extends backbone.Model
     asset_config = @config.assets
     assets_middleware = asset.manager(asset_config)
     asset.helpers.js()
+
     request_helper = (app) ->
       return (req, res, next) ->
         req.redis = app.redis
-        
+
+        # Calavera = req.Models.common.calavera.index
+        # RedisModel = new Calavera.abstract.redis(req.redis.client)
+
+        req.UserModel = new req.Models.common.user.UserModel()
+        # req.UserModel.AbstractModel = RedisModel
+
         next()
 
     app.configure("development", "production", () ->
@@ -55,7 +62,8 @@ class WebServer #extends backbone.Model
       app.use(express.session(app.session))
 
       app.use(nitrous.mvc())
-      app.use(blackjack.helpers() # TODO: flesh out
+      app.use(blackjack.helpers()) # TODO: flesh out
+      app.use(request_helper(app))
       app.use(assets_middleware)
 
       app.use(express.router(nitrous.routes()))
@@ -87,7 +95,7 @@ class WebServer #extends backbone.Model
     # _.extend(share_options.db, app.config.redisConfig)
     # sharejs.attach(app, share_options)
 
-    @everyone = nitrous.app.Controllers.nowjs.index(nowjs, app)
+    @everyone = nitrous.app.Controllers.nowjs.index(nowjs, nitrous, app)
 
     app.get("/session", (req, res) ->
       res.psend(req.session)

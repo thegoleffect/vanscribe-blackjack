@@ -41,7 +41,12 @@ class Username
   random: () ->
     return [@random_arr(@adjectives), @random_arr(@nouns), @random_arr([0..99])].join("-")
   
-  reserve: (username, sid, callback) ->
+  reserve: (username, sid, options, callback) ->
+    if typeof options == 'function'
+      callback = options
+      options = {}
+    ttl = options.ttl or @TTL
+
     self = this
     @client.setnx(@key(username), sid, (err, res) =>
       return callback(err) if err
@@ -49,7 +54,7 @@ class Username
       if res == 0 # already exists
         callback("username already exists", false)
       else
-        @client.expire(@key(username), @TTL, (err, res) ->
+        @client.expire(@key(username), ttl, (err, res) ->
           return callback(err || "error setting TTL on #{username}") if err or res ==0
 
           callback(err, true)
