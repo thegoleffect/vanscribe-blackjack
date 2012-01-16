@@ -1,20 +1,41 @@
+_ = require("underscore")
 async = require("async")
 
 module.exports.get = (req, res) ->
-  UserModel = new req.UserModel()
+  UserModel = req.UserModel
+  GamesModel = req.GamesModel
   setup = [
-    (cb) -> UserModel.load(req, (err, user) -> cb(err, user)),
-    (user, cb) -> GamesModel.load(req, user, (err, state) -> cb(err, user, state))
+    (cb) -> UserModel.load(req, (err, user) -> cb(err, user))
+    (user, cb) -> GamesModel.load(req, user, (err, user, table) -> cb(err, user, table))
   ]
-  render = (user, state, cb) ->
+  render = (user, table, cb) ->
     req.session.username = user.username
-    req.session.table = state.id
-    res.render("index/index", {
+    req.session.secret = user.secret
+    req.session.table = table.id
+
+    state = table
+    delete state.players[user.username]
+    if _.keys(state.players).length == 0
+      delete state.players
+
+    context = {
       player: user,
       table: state
-    })
+    }
+    cb(null, context)
+  
   setup.push(render)
-  async.waterfall(setup, (err) -> throw err) # TODO: pretty error handling
+
+  async.waterfall(setup, (err, context) -> 
+    tmpl = "index/index"
+    if err
+      tmpl = "index/error" 
+      context = {}
+
+    console.log(arguments)
+
+    res.render(tmpl, context)
+  ) # TODO: pretty error handling
 
 module.exports.heartbeat = (req, res) -> 
   res.send("1")

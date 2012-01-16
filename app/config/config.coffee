@@ -7,6 +7,7 @@ settings = {
   },
   sessions: {
     secret: "44efd9e97f648d45988924f507dce7df",
+    maxAge: 604800000,
     redis: process.env.REDISTOGO_URL || "redis://redistogo:3fa0997b72b7d7cc91d390992ff4b4f2@stingfish.redistogo.com:9620/"
   },
   databases: {

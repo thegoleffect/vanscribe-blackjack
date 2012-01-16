@@ -9,6 +9,7 @@ redis = require("redis")
 # sharejs = require("share").server
 # sharejs_monkeypatch = require("./lib/monkeypatch_sharejs").patch()
 url = require("url")
+util = require("util")
 
 
 blackjack = require("./lib/blackjack")
@@ -39,14 +40,18 @@ class WebServer #extends backbone.Model
     assets_middleware = asset.manager(asset_config)
     asset.helpers.js()
 
-    request_helper = (app) ->
+    request_helper = (nitrous) ->
+      # util.debug(JSON.stringify(nitrous.app))
+      UserModel = new nitrous.app.Models.common.user.UserModel(nitrous.app.redis.general)
+      GamesModel = new nitrous.app.Models.blackjack.games.GamesModel(nitrous.app.redis.general)
       return (req, res, next) ->
         req.redis = app.redis
 
         # Calavera = req.Models.common.calavera.index
         # RedisModel = new Calavera.abstract.redis(req.redis.client)
 
-        req.UserModel = new req.Models.common.user.UserModel()
+        req.UserModel = UserModel
+        req.GamesModel = GamesModel
         # req.UserModel.AbstractModel = RedisModel
 
         next()
@@ -63,7 +68,7 @@ class WebServer #extends backbone.Model
 
       app.use(nitrous.mvc())
       app.use(blackjack.helpers()) # TODO: flesh out
-      app.use(request_helper(app))
+      app.use(request_helper(nitrous))
       app.use(assets_middleware)
 
       app.use(express.router(nitrous.routes()))
@@ -107,6 +112,16 @@ class WebServer #extends backbone.Model
         session: req.session,
         cookies: req.cookies
       })
+    )
+    app.get("/session/new", (req, res) ->
+      req.session.destroy((err) ->
+        res.redirect("/")
+      )
+    )
+    app.get("/test", (req, res) ->
+      req.GamesModel.open_seat(req.session.username, (err, reply) ->
+        res.psend(arguments)
+      )
     )
     
     app.listen(@config.port, () =>

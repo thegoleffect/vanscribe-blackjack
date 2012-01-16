@@ -41,6 +41,7 @@ init_redis_session = (app, settings, hosturl = null) ->
     config = parse_redis_url(hosturl)
     settings.session.store = {
       secret: settings.sessions.secret,
+      maxAge: settings.sessions.maxAge,
       store: new app.redisStore({
         host: config.hostname,
         port: config.port,
@@ -51,6 +52,7 @@ init_redis_session = (app, settings, hosturl = null) ->
     util.debug("falling back to session MemoryStore()")
     settings.session.store = {
       secret: settings.sessions.secret,
+      maxAge: settings.sessions.maxAge,
       store: new express.session.MemoryStore()
     }
   

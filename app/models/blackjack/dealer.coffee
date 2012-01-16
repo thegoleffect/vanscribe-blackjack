@@ -62,8 +62,9 @@ class Dealer extends EventEmitter
     throw "cannot sit at a full table" if @table.free_seats.length <= 0
 
     # @table.seats[uuid] = @table.free_seats.pop()
-    uuid = rank() # hat already dbl checks for collisions
-    pass = rank() # password to use for accessing player's cards
+    # uuid = @rack() # hat already dbl checks for collisions
+    uuid = player.username
+    pass = @rack() # password to use for accessing player's cards
     @table.players[uuid] = p = {
       id: uuid,
       pass: pass,

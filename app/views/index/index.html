@@ -22,13 +22,13 @@
   <div class="table">
     {{> blackjack-dealer }}
 
-    {{#current_player}}
+    {{#player}}
       {{> blackjack-player }}
-    {{/current_player}}
+    {{/player}}
 
-    {{#players}}
+    {{#table.players}}
       {{> blackjack-players }}
-    {{/players}}
+    {{/table.players}}
     <div class="clear"></div>
   </div>
 
