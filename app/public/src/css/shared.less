@@ -81,6 +81,7 @@ a {
   
   .heading {
     padding-left: .4em;
+    width: @4cols - .4em !important;
     color: white;
     margin: 0 auto;
 
@@ -88,6 +89,13 @@ a {
       font-size: 1.8em;
       float: left;
       line-height: 1.25em;
+    }
+    .help {
+      float: right;
+      width: @1col;
+      text-align: center;
+      margin-top: (36/@em - 24/@em) / 2;
+      opacity: .8;
     }
 
     .fake_icon {
@@ -100,8 +108,6 @@ a {
       font-style: italic;
     }
   }
-
-  
 }
 
 .container {
@@ -266,6 +272,7 @@ section#play {
     }
     #self {
       margin-bottom: 8/@em;
+      height: @player-height * 1.6;
     }
   }
 }
@@ -273,7 +280,7 @@ section#play {
 
 
 
-section#test figure#grid {
+section#rulers figure#grid {
   height: @4cols;
   position: relative;
   overflow: hidden;
@@ -326,3 +333,7 @@ section#test figure#grid {
   .col36 {margin-left: -(18*72-12)/@em;}
 }
 
+
+#read {
+  min-height: 10em;
+}

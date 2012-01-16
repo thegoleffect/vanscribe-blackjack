@@ -3,7 +3,12 @@
     <div id="stats">
       <div class="purse statholder stackable">
         <div class="stat icon stackable"><img class="" src="/img/icons/coins.png" alt="Coins"></div>
-        <div class="stat stackable" id="purse_value"><span class="menutext">{{current_player.purse}}</span></div>
+        <div class="stat stackable" id="purse_value">
+          <span class="menutext">
+            {{#player}}{{player.purse}}{{/player}}
+            {{^player}}- -{{/player}}
+          </span>
+        </div>
         <div class="clear"></div>
       </div>
 
@@ -53,7 +58,7 @@
   </nav>
 </section>
 
-<!-- <section id="test">
+<section id="rulers">
   <figure id="grid">
     <div class="col col1"></div>
     <div class="col col2"></div>
@@ -92,8 +97,15 @@
     <div class="col col35"></div>
     <div class="col col36"></div>
   </figure>
-</section> -->
+</section>
 
-<section id="read">
+<section id="read" name="read">
   <!-- Documentation section goes here -->
+  <h1>&#x2663; Blackjack</h1>
+  <p>Best played using an iPhone 4S.  More documentation forthcoming.</p>
+</section>
+
+<section id="colophon" name="colophon">
+  <h1>Colophon</h1>
+  <p>List of stuff I used to build this &amp; learned during the process.</p>
 </section>

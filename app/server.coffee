@@ -101,28 +101,6 @@ class WebServer #extends backbone.Model
     # sharejs.attach(app, share_options)
 
     @everyone = nitrous.app.Controllers.nowjs.index(nowjs, nitrous, app)
-
-    app.get("/session", (req, res) ->
-      res.psend(req.session)
-    )
-    app.get("/session/test", (req, res) ->
-      namegen = new nitrous.app.Models.common.username(app.redis.client)
-      req.session.username = req.param("username", namegen.random()) if !req.session.username?
-      res.psend({
-        session: req.session,
-        cookies: req.cookies
-      })
-    )
-    app.get("/session/new", (req, res) ->
-      req.session.destroy((err) ->
-        res.redirect("/")
-      )
-    )
-    app.get("/test", (req, res) ->
-      req.GamesModel.open_seat(req.session.username, (err, reply) ->
-        res.psend(arguments)
-      )
-    )
     
     app.listen(@config.port, () =>
       console.log("listening on port #{@config.port}")
@@ -140,6 +118,6 @@ class WebServer #extends backbone.Model
     @start()
 
 app = new WebServer()
-app.start()
+# app.start()
 
 module.exports = app
