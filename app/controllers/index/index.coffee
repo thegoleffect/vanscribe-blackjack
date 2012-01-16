@@ -15,9 +15,8 @@ module.exports.get = (req, res) ->
 
     state = table
     delete state.players[user.username]
-    if _.keys(state.players).length == 0
-      delete state.players
-
+    delete state.players if _.keys(state.players).length == 0
+    
     context = {
       player: user,
       table: state
