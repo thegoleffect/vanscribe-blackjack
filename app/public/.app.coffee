@@ -1,11 +1,11 @@
-class BlackjackGame
-  constructor: () ->
-    console.log("new Blackjack obj created")
+# class BlackjackGame
+#   constructor: () ->
+#     console.log("new Blackjack obj created")
 
 
-window.BlackjackGame = BlackjackGame
+# window.BlackjackGame = BlackjackGame
 
-$(document).ready(() ->
+create_menu = () ->
   m = new Menu(document.querySelector('#bet'), {
     radius: 100,
     degrees: 90,
@@ -17,8 +17,17 @@ $(document).ready(() ->
     offset: 180
   })
 
+$(document).ready(() ->
+  create_menu()
+
   now.ready(() ->
     console.log('now is ready')
+
+    now.show_tables = (err, tables) ->
+      console.log("[err]: " + err) if err
+      console.log(tables)
+
+    now.listen_tables()
   )
   
   return null

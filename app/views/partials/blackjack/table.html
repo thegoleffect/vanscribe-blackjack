@@ -1,0 +1,14 @@
+{{#table}}
+  <div class="table">
+    {{> blackjack-dealer }}
+
+    {{#player}}
+      {{> blackjack-player }}
+    {{/player}}
+
+    {{#table.players}}
+      {{> blackjack-players }}
+    {{/table.players}}
+    <div class="clear"></div>
+  </div>
+{{/table}}

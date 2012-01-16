@@ -24,19 +24,13 @@
     <div class="clear"></div>
   </div>
 
-  <div class="table">
-    {{> blackjack-dealer }}
-
-    {{#player}}
-      {{> blackjack-player }}
-    {{/player}}
-
-    {{#table.players}}
-      {{> blackjack-players }}
-    {{/table.players}}
-    <div class="clear"></div>
+  <div id="alltables">
+    {{> blackjack-listtables }}
   </div>
 
+  <div id="current_table">
+    {{> blackjack-table }}
+  </div>
   
   <nav id="bet">
     <div class="label">Bet</div>

@@ -1,6 +1,6 @@
-class BlackjackGame
-  constructor: () ->
-    console.log("new Blackjack obj created")
+# class BlackjackGame
+#   constructor: () ->
+#     console.log("new Blackjack obj created")
 
 
-window.BlackjackGame = BlackjackGame
+# window.BlackjackGame = BlackjackGame
