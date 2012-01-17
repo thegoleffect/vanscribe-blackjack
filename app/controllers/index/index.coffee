@@ -8,14 +8,14 @@ module.exports.get = (req, res) ->
       username: "vanscribe",
       purse: 500
     },
-    # table: {
-    #   players: [
-    #     {username: "BustyBunny86", purse: 500},
-    #     {username: "CunningChris76", purse: 500},
-    #     {username: "DirtyDave27", purse: 500},
-    #     {username: "EnviousElla2", purse: 500}
-    #   ]
-    # }
+    table: {
+      players: [
+        {username: "BustyBunny86", purse: 500},
+        {username: "CunningChris76", purse: 500},
+        {username: "DirtyDave27", purse: 500},
+        {username: "EnviousElla2", purse: 500}
+      ]
+    }
   })
 
 # TODO: switch Models to be in a cached required vs polluting req obj

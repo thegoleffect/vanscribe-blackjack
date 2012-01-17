@@ -11,6 +11,9 @@ assetSettings = {
     "files": [
       # "https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js",
       # "http://localhost:#{process.env.PORT}/nowjs/now.js",
+      "../../js/libs/json2.js",
+      "../../js/libs/underscore-1.3.0.min.js",
+      "../../js/libs/backbone-0.5.3.min.js",
       "../../js/libs/radial-menu.js",
       "../../.app.coffee",
     ],

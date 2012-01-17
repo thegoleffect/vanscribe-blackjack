@@ -3,3 +3,4 @@ nouns_list = ["river", "moon", "rain", "wind", "sea", "snow", "lake", "pine", "l
 
 module.exports.adjectives = adj_list
 module.exports.nouns = nouns_list
+module.exports.ints = [0..99]
