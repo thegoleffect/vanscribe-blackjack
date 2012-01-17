@@ -42,16 +42,16 @@ class WebServer #extends backbone.Model
 
     request_helper = (nitrous) ->
       # util.debug(JSON.stringify(nitrous.app))
-      UserModel = new nitrous.app.Models.common.user.UserModel(nitrous.app.redis.general)
-      GamesModel = new nitrous.app.Models.blackjack.games.GamesModel(nitrous.app.redis.general)
+      # UserModel = new nitrous.app.Models.common.user.UserModel(nitrous.app.redis.general)
+      # GamesModel = new nitrous.app.Models.blackjack.games.GamesModel(nitrous.app.redis.general)
       return (req, res, next) ->
         req.redis = app.redis
 
         # Calavera = req.Models.common.calavera.index
         # RedisModel = new Calavera.abstract.redis(req.redis.client)
 
-        req.UserModel = UserModel
-        req.GamesModel = GamesModel
+        # req.UserModel = UserModel
+        # req.GamesModel = GamesModel
         # req.UserModel.AbstractModel = RedisModel
 
         next()
