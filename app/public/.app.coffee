@@ -27,6 +27,9 @@ $(document).ready(() ->
       console.log("[err]: " + err) if err
       console.log(tables)
 
+    now.load_game = (err, data) ->
+      
+
     now.listen_tables()
   )
   
