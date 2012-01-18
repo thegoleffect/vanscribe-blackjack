@@ -4,7 +4,7 @@ CardFactory = require("./cardfactory")
 Deck = require("./deck")
 EE = require("../common/ee")
 
-stripUndefineds = (d) -> return typeof d != "undefined"
+stripUndefineds = (d) -> return typeof d != "undefined" # TODO: move into a lib?
 
 class Dealer extends EE
   signal: "dealer"
@@ -291,7 +291,7 @@ class Dealer extends EE
       player.action = null
     @games[table_name].twiddling = []
     @games[table_name].hand_in_progress = false
-    # TODO: dequeue any Q'd players
+    # TODO: deal() on a setTimeout?
   
   # "Private" methods
   _end: (table_name, username, outcome) ->
