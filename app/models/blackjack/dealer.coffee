@@ -194,7 +194,9 @@ class Dealer extends EE
     hands = _.clone(@games[table_name].hands)
     hands.dealer = []
     hands.dealer.push(@games[table_name].dealer.hand[0])
-    if not @rules.use_hole
+
+    blackjack_d = @_is_blackjack(@games[table_name].dealer.hand)
+    if blackjack_d or not @rules.use_hole
       hands.dealer.push(@games[table_name].dealer.hand[1])
 
     # Emit state for client-side rendering
@@ -231,9 +233,10 @@ class Dealer extends EE
       self.final_evaluate(table_name, active_players)
     )
   
-  final_evaluate: (table_name, players) ->
+  final_evaluate: (table_name, active_players) ->
     throw "No such table exists" if not @games[table_name]?
     self = this
+
 
     bust_p = @_is_bust(hand)
     bust_d = @_is_bust(hand)
@@ -276,13 +279,13 @@ class Dealer extends EE
     bust_d = @_is_bust(hand)
     bj_p = @_is_blackjack(hand)
     bj_d = @_is_blackjack(dealer_hand)
-    ch_d = @rules.dealer.should_hit(@_hand_value(dealer_hand))
+    # ch_d = @rules.dealer.should_hit(@_hand_value(dealer_hand))
     wh_d = table.players[username].action || null
 
     # Check for important status conditions
     if bj_p and not bj_d 
-      @_win_blackjack(table_name, username)
-      return callback(null, undefined)
+      # @_win_blackjack(table_name, username)
+      return callback(null, username) # No user-input required
     
     if bust_p
       @_lose(table_name, username) # even if dealer also busted
