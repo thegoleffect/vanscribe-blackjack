@@ -42,10 +42,13 @@ class Manager extends EE
     return name
 
   _new_player: (name = @_name()) ->
-    return {
+    player_obj = {
       username: name,
       purse: 500
     }
+    console.log("generated _new_player() =>")
+    console.log(player_obj)
+    console.log("=========")
 
   # "Public" API
   join: () ->
@@ -55,7 +58,7 @@ class Manager extends EE
   
   sign_in: (members_card) ->
     @members[members_card.username] = 1
-    return members_card
+    # return members_card
 
   create: (name, options = {}) ->
     @tables[name] = @_default()
