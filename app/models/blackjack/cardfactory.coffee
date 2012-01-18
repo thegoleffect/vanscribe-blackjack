@@ -29,5 +29,8 @@ class CardFactory
       for rank, r in @ranks
         d.push(new @Card(r, s))
     return d
+  
+  identify: (c) ->
+    return [@ranks[c.r], @suits[c.s]]
 
 module.exports = CardFactory

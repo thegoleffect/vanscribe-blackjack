@@ -66,7 +66,7 @@ module.exports = (nowjs, nitrous, app) ->
     Bernie.place_bet(client.now.room, client.now.player, amount, callback)
 
   everyone.now.get_hands = (client = this) ->
-    Bernie.get_hands(client.now.room, client.now.player, client.now.receive_action)
+    return Bernie.get_hands(client.now.room, client.now.player, client.now.receive_action)
 
   everyone.now.hit = () -> null
   
@@ -74,6 +74,7 @@ module.exports = (nowjs, nitrous, app) ->
 
   everyone.now.perform_action = (name, user, data, callback) -> null
   
+  ## Development related functions (for testing stuff)
   everyone.now.test_poke = (callback) ->
     # console.log(Bernie.games)
     callback(Bernie.games)
@@ -109,6 +110,7 @@ module.exports = (nowjs, nitrous, app) ->
   nowjs.on("disconnect", () ->
     # TODO: clean up all connections & listeners
     client = this
+    Lobby.leave(client.now.room, client.now.player, (err, tables) ->)
     # Lobby.unlisten(client.user.clientId)
   )
 

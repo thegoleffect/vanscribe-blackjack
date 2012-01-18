@@ -1,5 +1,6 @@
 _ = require("underscore")
 $ = require("jquery")
+CardFactory = require("./cardfactory")
 Deck = require("./deck")
 EE = require("../common/ee")
 
@@ -17,6 +18,10 @@ class Dealer extends EE
     hand: {
       is_bust: (count) ->
         return count > 21
+      is_push: (a, b) ->
+        return a == b
+      is_blackjack: (cards) ->
+        # return cards.map((d) -> return d.r).reduce((a,b) -> a+b) == 21 and cards.length == 2
     },
     dealer: {
       should_hit: (count) ->
@@ -27,7 +32,7 @@ class Dealer extends EE
     player_reward: {
       blackjack: (bet) -> return Math.floor(1.5*bet)
       push: (bet) -> return bet
-      win: (bet) -> return 2*bet
+      win: (bet) -> return bet
       lose: (bet) -> return -bet
     }
     use_hole: false,
@@ -36,7 +41,6 @@ class Dealer extends EE
   constructor: (@_tables, @ruleset = {}) ->
     # TODO: load default rules & deck(s)
     @rules = $.extend(true, {}, @default_rules, @ruleset)
-    @decks = new Deck(@rules.decks)
     @games = {}
     @listeners = {}
     @create(name, meta) for own name, meta of @_tables
@@ -58,9 +62,11 @@ class Dealer extends EE
   
   # "Public" API (javascript has no public/private distinction, this is more of a convention)
   create: (name, meta) ->
+    deck = new Deck(@rules.decks)
     @games[name] = {
       meta: meta,
       hand_in_progress: false,
+      deck: deck, 
       pot: 0,
       seats: [],
       players: {},
@@ -70,9 +76,11 @@ class Dealer extends EE
       },
       queued: [], # sat down while hand_in_progress, will be seated next hand
       outlist: [], # locked out of game until place bet
-      twiddling: [],
+      twiddling: [], # won or lost, no actions available til next hand
+      timer: null,
       countdown: null
     }
+    @games[name].deck.shuffle()
     # @emit("_create", @games[name])
   
   add_player: (table_name, user, on_update, callback) ->
@@ -85,6 +93,7 @@ class Dealer extends EE
     else
       @games[table_name].seats.push(username)
       @games[table_name].players[username] = user # FUTURE: slightly redundant w/ username twice
+      @games[table_name].hands[username] = []
     
     @emit(@_signal(table_name), null, {
       username: username,
@@ -131,6 +140,7 @@ class Dealer extends EE
     return callback("Bet cannot be more than the maximum (100)") if amount > @rules.bet.max
     return callback("Bet cannot be less than the minimum (10)") if amount < @rules.bet.min
     
+    # TODO: activate player if idle
     if @games[table_name].hand_in_progress
       if user.username in @games[table_name].queued
         @_set_bet(table_name, user, amount)
@@ -150,14 +160,27 @@ class Dealer extends EE
     return callback("Bet cannot be changed during hand.")
   
   get_hands: (table_name, user, callback) ->
+    return callback("You are not currently sitting at #{table_name}") if user.username not in _.keys(@games[table_name].players)
+    self = this
     hands = {
       dealer: @get_dealer_hand(table_name)
     }
-    hands[user.username] = @_get_player_hand(table_name, user)
-    return hands
+    if @games[table_name].hand_in_progress
+      hands[user.username] = @_get_player_hand(table_name, user)
+    else
+      for own username, hand of @games[table_name].hands
+        hands[username] = @games[table_name].hands[username].map((c) ->
+          card = self.games[table_name].deck.CF.identify(c)
+          return card
+        )
+    
+    callback(null, hands)
 
   get_dealer_hand: (table_name) ->
-    return @games[table_name].dealer.hand
+    cards = []
+    for card in @games[table_name].dealer.hand
+      cards.push(@games[table_name].deck.CF.identify(card))
+    return cards
   
   # TODO: replace @games[table_name] w/ shorthand, to eliminate multiple lookups
   deal: (table_name) ->
@@ -176,17 +199,17 @@ class Dealer extends EE
       if not player.bet?
         @_idle_user(table_name, player)
 
-    if @rules.dealer.should_shuffle(@decks)
+    if @rules.dealer.should_shuffle(@games[table_name].deck)
       @emit(@_signal(table_name), null, {
         username: "Dealer",
         action: "shuffling",
         ts: +new Date()
       })
-      @decks.shuffle()
+      @games[table_name].deck.shuffle()
     
     # deal out cards mimicking real dealer
-    @_deal()
-    @_deal()
+    @_deal(table_name)
+    @_deal(table_name)
 
     @emit(@_signal(table_name), null, {
       username: "Dealer",
@@ -196,50 +219,124 @@ class Dealer extends EE
 
     # TODO: check for one or more blackjacks
     over = @evaluate(table_name)
-    if not over
-      # If users haven't responded by @rules.countdown, then they stand
-      self = this
-      @games[table_name].countdown = new Date((+new Date()) + @rules.countdown)
-      @games[table_name].timer = setTimeout((() ->
-        self.force_evaluate(table_name)
-      ), @rules.countdown)
-    else
-      @finish_hand(table_name)
-  
-  perform_action: (table_name, user, action, callback) ->
+    console.log("evaluate response = #{over}")
+    # if not over
+    #   # If users haven't responded by @rules.countdown, then they stand
+    #   self = this
+    #   @games[table_name].countdown = new Date((+new Date()) + @rules.countdown)
+    #   @games[table_name].timer = setTimeout((() ->
+    #     self.force_evaluate(table_name)
+    #   ), @rules.countdown)
+    # else
+    #   @finish_hand(table_name)
+
+  perform_action: (table_name, user, action) ->
     switch action
-      when "hit"
-        @hit(table_name, user)
-      when "stand"
-        @stand(table_name, user)
+      when "hit", "stand"
+        @games[table_name].players[user.username].action = action
       else 
         return callback("Unauthorized action performed (#{action})")
     
-    if not @_waiting()
-      @force_decisions(table_name, callback)
+    if not @_waiting(table_name, user)
+      @force_evaluate(table_name)
     else
-      @games[table_name].twiddling.push(user.username)
+      # Do nothing
       # TODO: emit signal to indicate ready check
   
   force_evaluate: (table_name, callback = () ->) ->
     @games[table_name].timer = null
     @games[table_name].countdown = null
-    # TODO: 
+    # TODO: perform all actions
+    # TODO: handle inactive players
+    # TODO: run @evaluate()
   
   evaluate: (table_name) ->
-    # dealer_value = 
-    # for own username, hand of @games[table_name].hands
+    console.log("evalute called()")
+    throw "No such table found" if not @games[table_name]?
+
+    console.log(@games[table_name].dealer)
+    console.log(@games[table_name].hands)
+    for own username, hand of @games[table_name].hands
+      continue if username in @games[table_name].twiddling # skip players who are waiting
+      continue if username in @games[table_name].outlist
+      console.log("evaluating #{username}")
+      if @_is_bust(hand)
+        @_lose(table_name, username) 
+        continue
+      else
+        # TODO: missing logic for winning under 21 & dealer busts
+        if @_is_blackjack(hand)
+          if @_is_blackjack(@games[table_name].dealer.hand)
+            @_push(table_name, username)
+          else
+            @_win_blackjack(table_name, username)
+        else
+          if @_is_blackjack(@games[table_name].dealer.hand)
+            @_lose(table_name, username)
+          else
+            # player is still in play
+            continue
+    
+    return @games[table_name].outlist.length == (@games[table_name].seats.length + 1)
 
   finish_hand: (table_name) ->
     @games[table_name].dealer.hand = []
     for own username, player of @games[table_name].players
       player.hand = []
+      player.action = null
     @games[table_name].twiddling = []
-    @games[table_name].hand_in_progress = true
+    @games[table_name].hand_in_progress = false
   
   # "Private" methods
+  _end: (table_name, username, outcome) ->
+    bet = @games[table_name].players[username].bet
+    @games[table_name].players[username].purse += @rules.player_reward["outcome"](bet)
+    @games[table_name].twiddling.push(username)
+    console.log("#{username}, #{outcome}, #{bet}")
+  
+  _lose: (table_name, username) -> @_end(table_name, username, "lose")
+
+  _win: (table_name, username) -> @_end(table_name, username, "win")
+
+  _win_blackjack: (table_name, username) -> @_end(table_name, username, "blackjack")
+  
+  _push: (table_name, username) -> @_end(table_name, username, "push")
+
+  _is_blackjack: (hand) ->
+    return false if hand.length > 2
+    return false if @_hand_value(hand) != 21
+    return true
+  
+  _is_bust: (hand) ->
+    return true if @_hand_value(hand) > 21
+    return false
+  
+  _card_value: (index) ->
+    throw "can't run _card_value on Ace" if index == 0
+    throw "can't run _card_value on card higher than max" if index > 13 # TODO: use CardFactory/Deck
+    return 10 if index > 10
+    return index
+
+  _hand_value: (hand) ->
+    # hand ranks are zero-indexed: Ace = 0
+    value = 0
+    for card in hand
+      if card.r != 0 
+        value += @_card_value(card.r)
+      else
+        # Handle Ace case
+        if value + 11 > 21
+          value += 1
+        else
+          value += 11
+
   _get_player_hand: (table_name, user) ->
-    return @games[table_name].hands[user.username]
+    self = this
+    return @games[table_name].hands[user.username].map((c) ->
+      card = self.games[table_name].deck.CF.identify(c)
+      return card
+    )
+
   
   _reward: (table_name, user, status) ->
     throw "Invalid outcome passed to Dealer._reward" if not @rules.player_reward[status]?
@@ -271,20 +368,28 @@ class Dealer extends EE
         queue = queue.filter((d) -> return typeof d != "undefined")
         break
   
+  _waiting: (table_name, user) ->
+    return true if @games[table_name].seats.length == 1 
+
+    for username, player in @games[table_name].players
+      if player.action == null
+        return false
+    return true
+
   _in_play: (table_name, username) ->
     return false if username in @games[table_name].outlist
     return true
   
   _deal: (table_name) ->
+    # TODO: handle case where users stands
     for i in @games[table_name].seats
-      player_uuid = @games[table_name].players[i]
+      player_uuid = @games[table_name].players[i].username
       if not @_in_play(table_name, player_uuid)
         continue
       else
-        @table.hands[player_uuid].push(@deck.pop())
-    @table.dealer_hand.push(@deck.pop())
-  
-  _hand_value: (h) ->
+        @games[table_name].hands[player_uuid] ?= []
+        @games[table_name].hands[player_uuid].push(@games[table_name].deck.pop())
+    @games[table_name].dealer.hand.push(@games[table_name].deck.pop()) if @rules.dealer.should_hit(@_hand_value(@games[table_name].dealer.hand))
     
 
 
