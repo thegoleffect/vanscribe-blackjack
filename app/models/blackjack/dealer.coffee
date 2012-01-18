@@ -93,7 +93,7 @@ class Dealer extends EE
       action: "joined",
       ts: +new Date()
     })
-    @on(@_signal(table_name), on_update)
+    @on(@_signal(table_name), on_update) # Ack player => request Bet amt
     @sanitize(table_name, callback) # TODO: make all players cards visible (wrong assumption earlier)
   
   remove_player: (table_name, user, callback) ->
@@ -137,36 +137,189 @@ class Dealer extends EE
     # delete d.hands
     callback(null, d)
   
+  logErrorCallback: (func_name, args, callback = null, msg) ->
+    util.debug("[#{func_name}]: #{msg}") # TODO: replace w/ winston ftw
+    return callback(msg) if callback?
+  
   place_bet: (table_name, user, amount, callback) ->
-    return callback("Bet cannot be more than the maximum (100)") if amount > @rules.bet.max
-    return callback("Bet cannot be less than the minimum (10)") if amount < @rules.bet.min
+    return @logErrorCallback("Dealer.place_bet", arguments, callback, "Bet cannot be more than the maximum (100)") if amount > @rules.bet.max
+    return @logErrorCallback("Dealer.place_bet", arguments, callback, "Bet cannot be less than the minimum (10)") if amount < @rules.bet.min
+    self = this
+
+    # Reset Player join Grace period
+    clearTimeout(@games[table_name].timer) # TODO: timer is used twice for diff reasons, poss simult
+    delete @games[table_name].timer
+
+    # Set bet for player & restart grace period
+    @_set_bet(table_name, user, amount)
+    @games[table_name].timer = setTimeout((() ->
+      self.start_game(table_name)
+    ), @rules.countdown)
+  
+  start_game: (table_name) ->
+    throw "No such table exists" if not @games[table_name]?
+    self = this
+    @games[table_name].hand_in_progress = true
+
+    # Bring Queued players in
+    for u in @games[table_name].queued
+      @games[table_name].seats.push(u.username)
+      @games[table_name].players[u.username] = u
+      @_dequeue_user(u) # TODO: dbl check user types here
     
-    ineligible = @_can_set_bet(table_name, user)
-    if ineligible
-      return callback(ineligible)
-    else
-      @_set_bet(table_name, user, amount)
+    # Pull out anyone who hasn't bet (incl any queued players who haven't)
+    for nametag in @games[table_name].seats
+      if not @_is_idle(table_name, nametag)
+        if not player.bet
+          @_idle_user(table_name, @games[table_name].players[nametag])
+
+    # for own username, player of @games[table_name].players
+    #   if not player.bet?
+    #     @_idle_user(table_name, player) # TODO: $.uniq on idle array
     
-    callback(null, amount) # TODO: client-side, respond by showing deal button
+    # Shuffle deck if necessary
+    if @rules.dealer.should_shuffle(@games[table_name].deck)
+      @emit(@_signal(table_name), null, {
+        username: "Dealer",
+        action: "shuffling",
+        ts: +new Date()
+      })
+      @games[table_name].deck.shuffle()
     
-    # return
-    # # TODO: activate player if idle
-    # if @games[table_name].hand_in_progress
-    #   if user.username in @games[table_name].queued
-    #     @_set_bet(table_name, user, amount)
-    #     return callback(null, amount)
+    # Deal out cards mimicking real dealer
+    @_initial_deal(table_name)
+    @_initial_deal(table_name)
     
-    # if @games[table_name].seats.length == 1
-    #   @_set_bet(table_name, user, amount)
-    #   @deal(table_name)
-    #   return callback(err, amount)
+    # TODO: convert hands to more user-friendly format
+    hands = _.clone(@games[table_name].hands)
+    hands.dealer = []
+    hands.dealer.push(@games[table_name].dealer.hand[0])
+    if not @rules.use_hole
+      hands.dealer.push(@games[table_name].dealer.hand[1])
+
+    # Emit state for client-side rendering
+    game_state = {
+      action: "start",
+      hands: hands,
+    }
+    @emit(@_signal(table_name), null, game_state)
+
+    # Loop over players & interact one at a time
+    async.mapSeries(@games[table_name].seats, (nametag, callback) ->
+      @interact_player(table_name, @games[table_name].players[nametag], callback)
+    , (err, active_players) ->
+      active_players = active_players.filter(stripUndefineds)
+
+      if err
+        @emit(@_signal(table_name), err)
+        @logErrorCallback("Dealer.start_game", arguments, null, err)
+        return null
+      
+      if active_players.length == 0
+        # Everyone was idle
+        for nametag in @games[table_name].seats
+          @_idle_user(table_name, @games[table_name].players[nametag])
+          # TODO: rename _idle_user to _idle_player to match conventions
+      
+      # After all players have played, dealer plays
+      if @rules.use_hole
+        @emit(@_signal(table_name), null, {action: "hole", card: @games[table_name].dealer.hand[1]})
+      
+      while @rules.dealer.should_hit(@_hand_value(table.dealer.hand))
+        table.dealer.hand.push(@games[table_name].deck.pop())
+      
+      self.final_evaluate(table_name, active_players)
+    )
+  
+  final_evaluate: (table_name, players) ->
+    throw "No such table exists" if not @games[table_name]?
+    self = this
+
+    bust_p = @_is_bust(hand)
+    bust_d = @_is_bust(hand)
+    bj_p = @_is_blackjack(hand)
+    bj_d = @_is_blackjack(dealer_hand)
+    ch_d = @rules.dealer.should_hit(@_hand_value(dealer_hand))
+    
+
+    # first_player = @games[table_name].seats[0]
+    # @interact_player(table_name, @games[table_name].players[first_player])
+    # {
+    #   # username: "Dealer",
+    #   # action: "dealt",
+    #   # ts: +new Date()
+    #   action: "deal"
+    # }
+    # Evaluate results
+    # @evaluate(table_name)
+    # ineligible = @_can_set_bet(table_name, user)
+    # if ineligible
+    #   return callback(ineligible)
     # else
-    #   # TODO: fix this logic
-    #   if amount == 0
-    #     @_queue_user(table_name, user)
-    #     @_set_bet(table_name, user, amount)
-    #     return callback(err, amount)
-    # return callback("Bet cannot be changed during hand.")
+    #   @_set_bet(table_name, user, amount)
+    
+    # callback(null, amount) # TODO: client-side, respond by showing deal button
+  
+  interact_player: (table_name, user, callback) ->
+    # This function is recursively called to update player's state upon decisions (or force decision via timeout)
+    return @logErrorCallback("interact_player", arguments, null, "No such table found (#{table_name})") if not @games[table_name]?
+
+    clearTimeout(@games[table_name].timer)
+    delete @games[table_name].timer
+
+    table = @games[table_name]
+    username = user.username
+    hand = table.hands[username]
+    dealer_hand = table.dealer.hand
+    
+    bust_p = @_is_bust(hand)
+    bust_d = @_is_bust(hand)
+    bj_p = @_is_blackjack(hand)
+    bj_d = @_is_blackjack(dealer_hand)
+    ch_d = @rules.dealer.should_hit(@_hand_value(dealer_hand))
+    wh_d = table.players[username].action || null
+
+    # Check for important status conditions
+    if bj_p and not bj_d 
+      @_win_blackjack(table_name, username)
+      return callback(null, undefined)
+    
+    if bust_p
+      @_lose(table_name, username) # even if dealer also busted
+      return callback(null, undefined)
+    
+    if not wh_d # player's .action currently null
+      if @games[table_name].timer # timer already running = player was idle in single mode & another joined
+        @_lose(table_name, username)
+        @_idle_user(table_name, user)
+        return @start_game(table_name)
+      
+      # Request decision from player
+      @emit(@_signal(table_name), null, {
+        username: username,
+        action: "has turn",
+        ts: +new Date()
+      })
+
+      if @_single_player(table_name)
+        # No time limit in single player mode
+        # TODO: on player queue, set inactivity timer, set this player to idle & seat other
+      else
+        # Start stopwatch for inactivity
+        @games[table_name].timer = setTimeout((() ->
+          callback("#{username} is now idle.")
+        ), @rules.countdown)
+    else
+      # FUTURE: additional actions go here
+      switch wh_d
+        when "stand"
+          return callback(null, username)
+        when "hit"
+          table.hands[username].push(@games[table_name].deck.pop())
+          return interact_player(table_name, user, callback)
+        else 
+          return @logErrorCallback("interact_player", arguments, callback, "Unsupported player action (#{wh_d}) requested.")
+
   
   get_hands: (table_name, user, callback) ->
     return callback("You are not currently sitting at #{table_name}") if user.username not in _.keys(@games[table_name].players)
@@ -285,7 +438,7 @@ class Dealer extends EE
   evaluate: (table_name) ->
     # TODO: I implemented the order wrong
     return
-    
+
     # # util.debug("evaluate called(#{table_name})")
     # throw "No such table found" if not @games[table_name]?
 
@@ -464,18 +617,24 @@ class Dealer extends EE
     )
   
   ## Gameplay::Hand action related
-  _deal: (table_name) ->
-    util.debug("_deal(#{table_name})")
-    for i in @games[table_name].seats
-      player_uuid = @games[table_name].players[i].username
-      util.debug("#{player_uuid}.action = #{@games[table_name].players[i].action}")
-      if not @_in_play(table_name, player_uuid)
-        util.debug("skipping #{player_uuid}")
+  _initial_deal: (table_name) ->
+    util.debug("_initial_deal(#{table_name})")
+    for nametag in @games[table_name].seats
+      username = @games[table_name].players[nametag].username
+      util.debug("#{username}.action = #{@games[table_name].players[nametag].action}")
+
+      twiddling_p = username in @games[table_name].twiddling
+      idle_p = username in @games[table_name].idle
+      stand_p = @games[table_name].players[username].action == "stand"
+
+      if twiddling_p or idle_p or stand_p
+      # if not @_in_play(table_name, player_uuid)
+        util.debug("skipping #{username}")
         continue
       else
-        util.debug("dealing card to #{player_uuid}")
-        @games[table_name].hands[player_uuid] ?= []
-        @games[table_name].hands[player_uuid].push(@games[table_name].deck.pop())
+        util.debug("dealing card to #{username}")
+        @games[table_name].hands[username] ?= []
+        @games[table_name].hands[username].push(@games[table_name].deck.pop())
     
     dealer_value = @_hand_value(@games[table_name].dealer.hand)
     if @rules.dealer.should_hit(dealer_value)
@@ -484,7 +643,14 @@ class Dealer extends EE
     else
       util.debug("dealer stands @ #{dealer_value}")
   
-  ## Gameplay::Hand Bet related
+  ## Gameplay conditionals
+  _single_player: (table_name) ->
+    return @games[table_name].seats.length == 1
+  
+  _is_idle: (table_name, username) ->
+    username = username.username if typeof username == "object" and username.username?
+    return username in @games[table_name].idle
+  
   _can_set_bet: (table_name, user) ->
     # Return null if can set bet; error message, if cannot
     idle = (user.username in @games[table_name].idle)
@@ -501,6 +667,7 @@ class Dealer extends EE
       return @_deidle_user(table_name, user) and null if idle
       return null
   
+  ## Gameplay mutators
   _set_bet: (table_name, user, amount) ->
     @games[table_name].players[user.username].bet = amount
   
