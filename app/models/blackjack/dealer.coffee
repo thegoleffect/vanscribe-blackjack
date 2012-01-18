@@ -673,6 +673,7 @@ class Dealer extends EE
   ## Gameplay mutators
   _set_bet: (table_name, user, amount) ->
     @games[table_name].players[user.username].bet = amount
+    @games[table_name].players[user.username].purse -= amount # TODO: adjust to compensate
   
   ## Common Array based functions
   # TODO: replace all array-based fns with master fn
