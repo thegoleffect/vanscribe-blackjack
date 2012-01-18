@@ -30,7 +30,7 @@ module.exports = (nowjs, nitrous, app) ->
     client = this
     nowjs.getGroup(client.now.room).now.receiveChat(client.now.player.username, message, +new Date())
   
-  # everyone.now.tables_listSync = () -> return client.now.room
+  # everyone.now.tables_listSync = () -> 
 
   everyone.now.tables_list = (callback = null) ->
     client = this
@@ -53,6 +53,7 @@ module.exports = (nowjs, nitrous, app) ->
   
   everyone.now.stand_up = (callback = null) ->
     client = this
+    # TODO: Dealer.cash out?
     Lobby.leave(client.now.room, client.now.player, (err, tables) ->
       throw err if err
       client.now.room = "Lobby"
@@ -68,12 +69,14 @@ module.exports = (nowjs, nitrous, app) ->
   everyone.now.get_hands = (client = this) ->
     return Bernie.get_hands(client.now.room, client.now.player, client.now.receive_action)
 
-  everyone.now.hit = () -> null
+  everyone.now.hit = () -> Bernie.request_action(client.now.room, client.now.player, "hit")
   
-  everyone.now.stand = () -> null
+  everyone.now.stand = () -> Bernie.request_action(client.now.room, client.now.player, "stand")
 
-  everyone.now.perform_action = (name, user, data, callback) -> null
-  
+  everyone.now.deal = () -> 
+    # Single player only
+    Bernie.request_action(client.now.room, client.now.player, "deal")
+    
   ## Development related functions (for testing stuff)
   everyone.now.test_poke = (callback) ->
     # console.log(Bernie.games)
