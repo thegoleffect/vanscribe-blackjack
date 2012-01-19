@@ -15,7 +15,13 @@ init_settings = (app) ->
     app.redis[name] = initialize_redis_client(hosturl)
 
   init_redis_session(app, settings, settings.sessions.redis)
+
+  if process.env.NODE_ENV == "production"
+    settings.socketio.transports.shift() # disable websockets on production
+
   console.log('initialized settings')
+  console.log("socketio.transports: ")
+  console.log(settings.socketio.transports)
   return settings
 
 parse_redis_url = _.memoize((hosturl) ->

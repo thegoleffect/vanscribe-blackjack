@@ -16,6 +16,9 @@ settings = {
       publish: "redis://thegoleffect:a613d30b9911406f1ed05dd34a1ecf88@chubb.redistogo.com:9079/",
       subscribe: "redis://thegoleffect:a613d30b9911406f1ed05dd34a1ecf88@chubb.redistogo.com:9079/"
     }
+  },
+  socketio: {
+    transports:['websocket', 'xhr-polling','jsonp-polling']
   }
 }
 settings.port = process.env.PORT = settings.port || process.env.PORT || 3000 # normalize port

@@ -20,7 +20,10 @@ stripNowjs = (obj) ->
 module.exports = (nowjs, nitrous, app) ->
   subscribe = app.redis.subscribe
   publish = app.redis.publish
-  everyone = nowjs.initialize(app, {socketio: {transports:['websocket', 'xhr-polling','jsonp-polling']}})
+  console.log("nitrous: ")
+  # console.log(app.config(app))
+  console.log(nitrous.settings)
+  everyone = nowjs.initialize(app, {socketio: nitrous.settings.socketio})
 
   Lobby = new Manager()
   Bernie = new Dealer(Lobby.tables)

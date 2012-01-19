@@ -30,6 +30,7 @@ class WebServer #extends backbone.Model
 
     # convenience interfaces
     @config = app.config(app)
+    nitrous.settings = @config
 
     # TODO: pull from spoondate into nitrous
     asset = { # TODO: pull from spoondate into nitrous
