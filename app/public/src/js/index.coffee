@@ -1,38 +1,30 @@
+is_monitoring_history = false
+
+App = window.App = {
+  Routers: {},
+  Partials: {},
+  Templates: {},
+  Views: {},
+  init: (now) ->
+    App.R = new App.Routers.Lobby()
+    App.API = new App.Routers.Now(now)
+    for own name, tmpl of App.Templates
+      if name.slice(0, 9) == "partials/"
+        p_name = name.slice(9).split("/").join("-")
+        App.Partials[p_name] = tmpl
+      # App.Templates[name] = tmpl
+    Backbone.history.start()
+}
+
 $(document).ready(() ->
-  create_menu()
 
   now.ready(() ->
-    console.log('now is ready')
-    # TODO: get server's cliside code version & alert user if out of date
-
-    # Nowjs Server functions
-    ## General functions
-    now.receiveChat = (name, message, timestamp) ->
-      console.log(timestamp, name, message)
     
-    ## Table Lobby related functions
-    # now.show_tables = (err, tables) ->
-    #   console.log("[err]: " + err) if err
-    #   console.log(tables)
-    
-    ## Game related functions
-    now.load_game = (err, data) ->
-      throw err if err or not data
-      console.log("table data: ")
-      console.log(err, data)
-      # TODO: draw view
-      if data.hand_in_progress
-        # TODO: present wait alert msg
-      else
-        # TODO: ask user to pick bet amount to get started
+    UI = new RadialUI()
 
-    now.receive_action = (err, data) ->
-      console.log("received action")
-      console.log(err, data)
-      now.get_hands() if data.action == "dealt"
-
-    # now.listen_tables()
+    if not is_monitoring_history
+      is_monitoring_history = true
+      App.init(now)
   )
-  
-  return null
+  return null # Prevents accidental automatic return insertion
 )

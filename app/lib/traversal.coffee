@@ -78,7 +78,7 @@ class Traversal
     # console.log("selected = #{selected}")
     return _.uniq(selected)
     
-  aggregate: () ->
+  aggregate: (preprocess = null) ->
     return throw "No aggregate file specified" if !@options.aggregate_file?
     watch = @options.watch || false
     aggregate_file = @options.aggregate_file
@@ -94,14 +94,17 @@ class Traversal
       
     @options.functions.post = (startPath, currentFile, selected) =>
       destination = path.join(@startPath, aggregate_file)
-      contents = fs.readFileSync(currentFile).toString()
+      contents = fs.readFileSync(currentFile, 'utf-8').toString()
       # console.log("[#{@count}]: post destination = #{destination}")
       if !path.existsSync(destination)
-        # console.log("writing new files")
         f = fs.writeFileSync(destination, contents)
       else
         current = fs.readFileSync(destination)
-        f = fs.writeFileSync(destination, current.toString() + contents.toString() + "\n\n")
+        # console.log("writing #{currentFile} to #{destination}") if @type == "html"
+        if preprocess
+          contents = preprocess(currentFile, contents.toString()) 
+        else
+          f = fs.writeFileSync(destination, current.toString() + contents.toString() + "\n\n", 'utf-8')
         
       selected.push(aggregate_file)
       if watch

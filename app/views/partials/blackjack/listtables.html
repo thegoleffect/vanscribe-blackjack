@@ -1,6 +1,22 @@
+<h3>Lobby <small>Join an open table!</small></h3>
 <div class="tables">
+  <div class="table heading">
+    <div class="name">
+      <p>Table Name</p>
+    </div>
+    <div class="seats">
+      <p>Seats</p>
+    </div>
+    <div class="locked">
+      <p>Private?</p>
+    </div>
+  </div>
   {{#tables}}
-    <div class="open">Test</div>
+    <div class="table">
+      <div class="name"><a id="{{name}}" class="{{#open}}open{{/open}}" href="#">{{name}}</a></div>
+      <div class="seats">{{taken}}/{{seats}}</div>
+      <div class="locked">{{#private}}yes{{/private}}{{^private}}no{{/private}}</div>
+    </div>
   {{/tables}}
   <div class="clear"></div>
 </div>

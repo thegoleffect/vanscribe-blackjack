@@ -11,13 +11,9 @@ redis = require("redis")
 url = require("url")
 util = require("util")
 
-
+asset = {}
 blackjack = require("./lib/blackjack")
-asset = { # TODO: pull from spoondate into nitrous
-  manager: require('connect-assetmanager'), 
-  handler: require('connect-assetmanager-handlers'),
-  helpers: require("../scripts/assets")
-}
+
 
 class WebServer #extends backbone.Model
   start: (callback = null) ->
@@ -36,9 +32,16 @@ class WebServer #extends backbone.Model
     @config = app.config(app)
 
     # TODO: pull from spoondate into nitrous
+    asset = { # TODO: pull from spoondate into nitrous
+      manager: require('connect-assetmanager'), 
+      handler: require('connect-assetmanager-handlers'),
+      helpers: require("../scripts/assets")
+    }
     asset_config = @config.assets
+    # asset.helpers.js()
+    asset.helpers.html() # compile hogan templates
+    delete asset_config.html
     assets_middleware = asset.manager(asset_config)
-    asset.helpers.js()
 
     request_helper = (nitrous) ->
       # util.debug(JSON.stringify(nitrous.app))

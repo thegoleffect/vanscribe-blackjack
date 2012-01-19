@@ -19,7 +19,7 @@
 }
 
 a {
-  color: @color-anchor;
+  /*color: @color-anchor;*/
   text-decoration: none;
 }
 
@@ -84,6 +84,9 @@ a {
     /*width: @4cols - .4em !important;*/
     color: white;
     margin: 0 auto;
+    a, a:visited {
+      color: white;
+    }
 
     .fake_icon, .h1 {
       font-size: 1.8em;
@@ -193,7 +196,42 @@ section#play {
     }
   }
 
-  .table {
+  #alltables {
+    h3 {
+      margin-top: .7em;
+      margin-bottom: 4/@em;
+      small {
+        font-size: .8em;
+      }
+    }
+    .tables {
+      color: #333;
+      margin-bottom: .7em;
+      .table.heading p {
+        font-weight: 600;
+      }
+      .table {
+        min-width: @4cols;
+        > div {
+          float: left;
+        }
+        .name {
+          width: @2cols;
+          margin-right: (@gutter - 2)/@em;
+        }
+        .seats, .locked {
+          width: @1col;
+          text-align: center;
+        }
+        .seats {
+          margin-right: (@gutter - 2)/@em;
+        }
+      }
+    }  
+  }
+  
+
+  .current_table {
     @player-height: 36/@em;
     
     /*background-image: url(/img/felt.png);*/

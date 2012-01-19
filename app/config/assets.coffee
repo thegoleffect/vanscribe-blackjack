@@ -3,10 +3,18 @@ path = require("path")
 root = path.join(__dirname, "../../")
 
 assetSettings = {
+  html: {
+    "path": path.join(root, "./app/views"),
+    "aggregate_file": "../public/.templates.js",
+    "dataType": "html",
+    "files": [
+
+    ]
+  },
   js: {
     "route": /\/static\/js\/[a-z0-9]+\/.*\.js/,
     "path": path.join(root, "./app/public/src/js/"),
-    "aggregate_file": "../../.app.coffee"
+    "aggregate_file": "../../.app.coffee",
     "dataType": "javascript",
     "files": [
       # "https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js",
@@ -14,8 +22,15 @@ assetSettings = {
       "../../js/libs/json2.js",
       "../../js/libs/underscore-1.3.0.min.js",
       "../../js/libs/backbone-0.5.3.min.js",
+      "../../js/libs/hogan.js-1.0.3.js",
       "../../js/libs/radial-menu.js",
-      "../../.app.coffee",
+      # "../../.app.coffee",
+      "../../src/js/index.coffee",
+      "../../src/js/radialui.coffee",
+      "../../src/js/nowhandlers.coffee",
+      "../../src/js/backbone/router.coffee",
+      "../../src/js/backbone/views.coffee",
+      "../../.templates.js",
     ],
     "preManipulate": {
       "^": [ handlers.coffeeRenderer ]
@@ -54,9 +69,11 @@ assetSettings = {
   }
 }
 if process.env.NODE_ENV == "production"
-  assetSettings.js.files.unshift("http://blackjack.vanscribe.com/nowjs/now.js")
+  nowjs_url = "http://blackjack.vanscribe.com/nowjs/now.js"
 else
-  assetSettings.js.files.unshift("http://localhost:#{process.env.PORT}/nowjs/now.js")
+  nowjs_url = "http://localhost:#{process.env.PORT}/nowjs/now.js"  
+assetSettings.js.files.unshift(nowjs_url)
+# console.log("unshifted #{nowjs_url}")
 
 
 module.exports = assetSettings

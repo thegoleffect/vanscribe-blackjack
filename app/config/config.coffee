@@ -18,7 +18,7 @@ settings = {
     }
   }
 }
-process.env.PORT = settings.port = settings.port || process.env.PORT || 3000 # normalize port
-settings.assets = require("./assets") if path.existsSync(path.join(__dirname, "./assets.coffee")) # needs to be after port
+settings.port = process.env.PORT = settings.port || process.env.PORT || 3000 # normalize port
 
+settings.assets = require("./assets") if path.existsSync(path.join(__dirname, "./assets.coffee")) # needs to be after port
 module.exports = settings

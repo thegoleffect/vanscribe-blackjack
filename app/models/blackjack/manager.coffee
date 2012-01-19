@@ -49,6 +49,7 @@ class Manager extends EE
     console.log("generated _new_player() =>")
     console.log(player_obj)
     console.log("=========")
+    return player_obj
 
   # "Public" API
   join: () ->
@@ -69,8 +70,31 @@ class Manager extends EE
   employ: (dlr) ->
     # @dealer = dlr
     @_register(dlr.update)
+  
+  rasterize: (table_obj) ->
+    t = []
+    for own k,v of table_obj
+      open = v.players.length < v.max_players
+      taken = v.players.length
+      seats = v.max_players
 
-  list: (callback = null) -> callback(null, @tables) if callback
+      outobj = {
+        name: k, 
+        open: open,
+        seats: seats,
+        taken: taken,
+        private: v.private,
+        betrange: v.betrange,
+      }
+
+      t.push(outobj)
+    return t
+
+
+  list: (callback = null) -> 
+    output = @rasterize(@tables)
+    callback(null, output) if callback
+    return output
   
   listen: (clientId, callback) ->
     callback(null, @tables)
@@ -89,7 +113,7 @@ class Manager extends EE
     # return callback("Table is private") # FUTURE: enable if users can create rooms
 
     @tables[table_name].players.push(user.username)
-    s = @_signal('update')
+    # s = @_signal('update')
     @emit(@_signal("update"), null, {
       action: "sit",
       table_name: table_name
