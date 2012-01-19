@@ -625,14 +625,23 @@ class Dealer extends EE
         
         
         if @games[table_name].hand_in_progress
-          @emit(@_signal(table_name), null, {
-            actor: username,
-            verb: "is not allowed to deal again",
-            # state: {card: ccard}
-            action: "invalid",
-            ts: +new Date()
-          })
-          return callback("Cannot request deal while hand in progress") 
+          if username not in @games[table_name].seats
+            @emit(@_signal(table_name), null, {
+              actor: username,
+              verb: "is not allowed to deal again",
+              # state: {card: ccard}
+              action: "invalid",
+              ts: +new Date()
+            })
+            return callback("Cannot request deal while hand in progress") 
+          else
+            @emit(@_signal(table_name), null, {
+              actor: username,
+              action: "has turn",
+              verb: "has turn", # TODO: switch from actions to verbs?
+              published: +new Date()
+            })
+            return callback(null, @start_game(table_name))
         return callback("Cannot request deal with a group") if @games[table_name].seats.length > 1
         
         return callback(null, @start_game(table_name))

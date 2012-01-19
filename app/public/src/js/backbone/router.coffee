@@ -9,7 +9,7 @@ class LobbyRouter extends Backbone.Router
   },
 
   index: () ->
-    now.stand_up(now.room) if now.room != "Lobby"
+    return now.stand_up(@index) if now.room != "Lobby"
       
     now.get_room((err, room) ->
       console.log("index called() with room = #{room}")
@@ -37,10 +37,12 @@ class LobbyRouter extends Backbone.Router
 
   sit_down: (name) ->
     # username = now.player.username
-    now.stand_up(now.room) if now.room != "Lobby"
+    return now.stand_up(@index) if now.room != "Lobby"
+    
     console.log("Router.sit_down(): does now.sit_down exist? #{now?.sit_down?}")
     table_name = @table_name(name)
     App.Views.Table.render(table_name)
+    App.Views.Lobby.rm() if App.Views.Lobby.el.is(":visible")
   
   test: () ->
     console.log("test page")

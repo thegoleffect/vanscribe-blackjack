@@ -55,18 +55,35 @@ class Table extends BaseView
     switch data.action
       when "start"
         App.Views.Table.startGame(data)
+        $('#statuslog h4 small').text("Choose a move ([H]it or [St]and)")
       when "joined"
         App.Views.Table.ohai_player(data)
       when "left"
         App.Views.Table.bye_player(data)
+      when "invalid"
+        if verb == "is not allowed to hit/stand"
+          $('#statuslog h4 small').text("Click D to Play Again")
+        else if verb == "is not allowed to deal again"
+          $('#statuslog h4 small').text("Choose a move ([H]it or [St]and)")
+        else
+          $('#statuslog h4 small').text([data.actor, data.verb, data.obj].join(" "))
       when "has turn"
       #   App.Views.Table.prompt_deal(data)
         console.log("has turn: " + JSON.stringify(data))
+        $('#statuslog h4 small').text("Choose a move ([H]it or [St]and)")
         App.Views.Table.notify(data.action)
       when "new card"
         console.log("new card!")
         # App.Views.Table.log(data)
         App.Views.Table.updateHand(data)
+        
+        if data.actor == "dealer"
+          p = "Dealer"
+          val = App.Views.Table._hand_value(App.Views.Table.table.hands["dealer"])
+        else
+          p = data.actor
+          val = App.Views.Table._hand_value(App.Views.Table.table.hands[p])
+        $('#statuslog h4 small').text("#{p} card!  Value = #{val}")
       when "hand over"
         App.Views.Table.finish(data)
         App.Views.Table.notify(data.action)
@@ -85,6 +102,7 @@ class Table extends BaseView
           object: "#{your_hand} to #{dealer_hand} (#{prefix}" + bet + ").  Try again: Press D"
         })
         App.Routers.Actions.open()
+        $('#statuslog h4 small').text("Click D to Play Again")
       when "broke"
         App.Views.Table.updatePurse(data.purse)
         App.Views.Table.log({
@@ -92,6 +110,7 @@ class Table extends BaseView
           verb: "bails",
           object: "you out (+500)"
         })
+        $('#statuslog h4 small').text("Cha-ching!")
       else 
         console.log(["Table.on_update: ", data.action, err, data])
   
