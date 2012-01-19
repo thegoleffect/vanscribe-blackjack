@@ -7,13 +7,15 @@ App = window.App = {
   Views: {},
   KV: {},
   init: () ->
-    
     status = Backbone.history.start()
     if not status
       console.log("current route was not found")
     else
       console.log("backbone loaded successfully")
 }
+
+$('#jsnoscript p').text("Loading...")
+
 
 $(document).ready(() ->
   now.ready(() ->

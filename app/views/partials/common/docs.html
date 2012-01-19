@@ -1,14 +1,32 @@
 <section id="read" name="read">
   <!-- Documentation section goes here -->
   <h1>&#x2663; Blackjack</h1>
+  <h4>Instructions</h4>
+  <p>Click a table name to join (if seats open)</p>
+  <p>Red circle opens action menu</p>
+  <p>H = Hit, St = Stand, D = Deal</p>
+  <p>Click the (i) to back to Lobby</p>
+  <br/><br/>
+  <h4>Rationale</h4>
   <p>Best played using an iPhone.</p>
   <p>This game was designed, built, &amp; deployed over a week to demonstrate a wide range of artistic and technical skills.</p>
-  <p>A few of the more annoying "Incomplete Parts" will get fixed while it is live... but after a power nap.</p>
+  <p>In addition to being a showcase, I forced myself to learn several new things at the cost of time (and possibly health). These cool toys are listed in the Colophon.</p> 
+  <p>A few of the more annoying "Tracked but Incomplete" parts will get fixed while it is live... but after a power nap.</p>
 </section>
 
 <section id="incomplete">
-  <h2>Incomplete Parts</h2>
+  <h2>Tracked but Incomplete</h2>
   <dl>
+    <dt class="strikethrough">Loading message</dt>
+    <dd>Heroku apparently has lag spikes = not clear that you're waiting</dd>
+    <dt>Better UI/UX improvements</dt>
+    <dd>Card sum indicators</dd>
+    <dd>Need to call attention to radial buttons at prompts</dd>
+    <dd>Not enough headers/title sections for chunks of the page.</dd>
+    <dd>Action bar tooltips so that you can tell what D, St, &amp; H are.</dd>
+    <dd>Deal &amp; Stand should force Deal if game is over.</dd>
+    <dd>Needs a better way to get back to Table list.</dd>
+    <dd>Disabling all of the console.log messages would be nice.</dd>
     <dt>Multiplayer rooms have been disabled.</dt>
     <dd>A lot of the work is done for this on both front &amp; back end but it gets a little hairy.</dd>
     <dt>Money persistence is not yet implemented.</dt>
@@ -17,8 +35,9 @@
     <dt>Leaderboards have been disabled.</dt>
     <dt>Unobtrusive version is incomplete</dt>
     <dd>For those pesky JavaScript haters.</dd>
-    <dt>Action bar tooltips missing</dt>
-    <dd>So that you can tell what D, St, &amp; H are.</dd>
+    <dt>Username &amp; Avatar customization is disabled.</dt>
+    <dt>Bet customization is disabled until UI is improved</dt>
+    <dt>... a few others, to be added</dt>
   </dl>
 </section>
 
@@ -30,6 +49,7 @@
     <dt>Basic Gameplay</dt>
     <dd>Deal, Hit, Stand - Blackjack pays 3:1</dd>
     <dd>The casino will bail you out if you go negative</dd>
-    <dd>Basic log keeps track of wins and losses.</dd>
+    <dd>Basic paper log keeps track of wins and losses.</dd>
+    <dt>... a few others, to be added</dt>
   </dl>
 </section>

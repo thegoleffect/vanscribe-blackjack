@@ -82,7 +82,7 @@ class Table extends BaseView
         App.Views.Table.log({
           actor: "You",
           verb: verb,
-          object: "#{your_hand} to #{dealer_hand} (#{prefix}" + bet + ")"
+          object: "#{your_hand} to #{dealer_hand} (#{prefix}" + bet + ").  Try again: Press D"
         })
         App.Routers.Actions.open()
       when "broke"
@@ -96,7 +96,7 @@ class Table extends BaseView
         console.log(["Table.on_update: ", data.action, err, data])
   
   log: (activity) ->
-    $('#gamelog').prepend("<p>" + [activity.actor, activity.verb, activity.object].join(" ") + ".</p>")
+    $('#gamelog h4').insertAfter("<p>" + [activity.actor, activity.verb, activity.object].join(" ") + ".</p>")
   
   notify_active: false
   notify: (type = "turn") ->
@@ -129,6 +129,11 @@ class Table extends BaseView
     self = this
     now.sit_down(table_name, @on_update, (err, table) ->
       console.log("inside sit_down's callback")
+      if err == "Table is full"
+        err = null
+        App.Views.Lobby.rm()
+        table = App.Views.Table.table
+      
       throw err if err
 
       # Automatically set a bet TODO: switch to a diff mode?

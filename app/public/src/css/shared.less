@@ -2,6 +2,20 @@
   
 }
 
+#jsnoscript {
+  padding: 10/@em;
+  color: red;
+  font-weight: bold;
+  text-align: center;
+  p {
+    font-size: 1.2em;
+  }
+}
+
+.strikethrough {
+  text-decoration: line-through;
+}
+
 @museo: "museo-1", "museo-2", "Helvetica Neue", sans-serif;
 
 .shadow {
@@ -262,6 +276,12 @@ section#play {
     p {
       font-size: .7em;
     }
+    h4 {
+      text-align: center;
+      margin: 0px auto;
+      line-height: 16/@em;
+      margin-top: -.5em;
+    }
   }
   .current_table {
     @player-height: 36/@em;
@@ -395,6 +415,11 @@ section#play {
   @sec-margins: 20/@em;
 }
 
+section h3 {
+  margin-top: 10/@em;
+  margin-bottom: 10/@em;
+}
+
 section#rulers figure#grid {
   height: @4cols;
   position: relative;
@@ -451,4 +476,7 @@ section#rulers figure#grid {
 
 #read {
   min-height: 10em;
+  p {
+    padding: 4/@em;
+  }
 }

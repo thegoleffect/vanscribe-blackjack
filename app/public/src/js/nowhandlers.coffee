@@ -39,6 +39,7 @@ class NowHandlers
           window.is_monitoring_history = true
           console.log("App.init()")
           App.init()
+          $('#jsnoscript').remove()
         else
           console.log("not monitoring history right now")
     ), 1000)
