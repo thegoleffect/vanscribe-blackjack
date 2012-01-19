@@ -183,11 +183,13 @@ module.exports = (nowjs, nitrous, app) ->
     app.session_store.get(sid, (err, session) ->
       app.session_store.set(sid, session, () ->)
     )
-
-    nowjs.getGroup(client.now.room).removeUser(client.user.clientId)
+    Lobby.leave(client.now.room, client.now.player, (err, tables) ->
+      nowjs.getGroup(client.now.room).removeUser(client.user.clientId)
+    )
+    
 
     
-    Lobby.leave(client.now.room, client.now.player, (err, tables) ->)
+    
   )
   
   # cleanup = (callback) ->

@@ -392,7 +392,13 @@ section#play {
 }
 
 
-
+section {
+  @sec-margins: 20/@em;
+  #working, #incomplete, #colophon {
+    margin-top: @sec-margins;
+    margin-bottom: @sec-margins
+  }
+}
 
 section#rulers figure#grid {
   height: @4cols;
