@@ -134,7 +134,7 @@ class Table extends BaseView
         App.Views.Lobby.rm()
         table = App.Views.Table.table
       
-      throw err if err
+      throw err if err or not table
 
       # Automatically set a bet TODO: switch to a diff mode?
       now.bet(100, (err, amount) ->

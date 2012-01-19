@@ -36,7 +36,14 @@ class LobbyRouter extends Backbone.Router
     # username = now.player.username
     console.log("Router.sit_down(): does now.sit_down exist? #{now?.sit_down?}")
     table_name = @table_name(name)
-    App.Views.Table.render(table_name)
+    if table_name != "Lobby"
+      now.stand_up((err, response) ->
+        throw (err) if err != "Cannot stand up unless already seated."  
+        App.Views.Table.render(table_name)
+      )
+    else
+      App.Views.Table.render(table_name)
+    
   
   test: () ->
     console.log("test page")

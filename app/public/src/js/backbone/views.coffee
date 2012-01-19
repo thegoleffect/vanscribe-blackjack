@@ -31,6 +31,8 @@ class Lobby extends BaseView
     this.rm()
     App.Router.navigate("table/" + @enc(event.target.id), true)
 
+
+
 App.Views.Base = BaseView
 App.Views.Lobby = new Lobby()
 
