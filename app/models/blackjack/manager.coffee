@@ -161,7 +161,7 @@ class Manager extends EE
 
   _already_seated_here: (table_name, user) ->
     # FUTURE: change to a more optimal data structure w/ distributed version
-    return user.username in @tables[table_name].players 
+    return user.username in _.keys(@tables[table_name].players)
   
   _already_full: (table_name) ->
     t = @tables[table_name]

@@ -3,8 +3,8 @@
     <div id="stats">
       <div class="purse statholder stackable">
         <div class="stat icon stackable"><img class="" src="/img/icons/coins.png" alt="Coins"></div>
-        <div class="stat stackable" id="purse_value">
-          <span class="menutext">
+        <div class="stat stackable" id="purse_value_container">
+          <span class="menutext" id="purse_value">
             {{#player}}{{player.purse}}{{/player}}
             {{^player}}- -{{/player}}
           </span>
@@ -37,7 +37,7 @@
 
 {{!>common-test}}
 
-{{>common-rulers}}
+{{!>common-rulers}}
 
 {{>common-docs}}
 

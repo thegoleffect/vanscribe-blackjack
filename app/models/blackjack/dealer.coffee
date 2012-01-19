@@ -26,25 +26,25 @@ class Dealer extends EE
         return D.cards_remaining() <= Math.floor(.25 * D.cards_total())
     },
     player_reward: {
-      withhold: (bet) -> return -bet
+      withhold: (bet) -> return 0 #-bet
       blackjack: (bet) -> return Math.floor(1.5*bet)
-      push: (bet) -> return bet
-      win: (bet) -> return 2*bet
-      lose: (bet) -> return 0 # already subtracted by withhold
+      push: (bet) -> return 0
+      win: (bet) -> return bet
+      lose: (bet) -> return -bet #0 # already subtracted by withhold
     }
     use_hole: false
   }
-
+  
   constructor: (@_tables, @ruleset = {}) ->
     @rules = $.extend(true, {}, @default_rules, @ruleset)
     @games = {}
     @listeners = {}
     @create(name, meta) for own name, meta of @_tables
-
+    
   update: (err, data, callback) ->
     return callback(err) if err
     return callback("Data must exist & supply a .type") if not data?.action?
-
+    
     console.log("Lobby triggered: update(#{err}, #{JSON.stringify(data)})")
     switch data.action
       when "sit"
@@ -63,18 +63,18 @@ class Dealer extends EE
       meta: meta,
       hand_in_progress: false,
       deck: deck, 
-
+      
       seats: [],
       players: {},
       hands: {},
       dealer: {
         hand: []
       },
-
+      
       queued: [], # sat down while hand_in_progress, will be seated next hand
       idle: [], # idle, locked out of game until place bet
       twiddling: [], # won or lost, no actions available til next hand
-
+      
       timer: null,
       interact_timer: null,
       join_timer: null,
@@ -86,7 +86,7 @@ class Dealer extends EE
   add_player: (table_name, user, on_update, callback) ->
     return callback("No such table found.") if not @games[table_name]?
     return callback("Invalid user supplied") if not user?.username? # TODO: expand into @validate_user()?
-    return callback("Already sitting here") if user.username in @games[table_name].seats
+    return @sanitize(table_name, callback) if user.username in @games[table_name].seats
     
     username = user.username
     @games[table_name].players[username] = user
@@ -100,7 +100,7 @@ class Dealer extends EE
         player_one = @games[table_name].players[nametag]
         last_action = player_one.last_action
         player_one_idled = (+new Date() - last_action >= (2*@rules.countdown))
-
+        
         if last_action and player_one_idled
           @_set_player_idle(table_name, player_one)
           @start_game(table_name)
@@ -113,7 +113,7 @@ class Dealer extends EE
       verb: "has joined",
       target: "Table " + table_name,
       action: "joined",
-      state: {table: @games[table_name]},
+      state: {table: @sanitize(table_name)},
       ts: +new Date()
     })
     @on(@_signal(table_name), on_update) # Ack player => request Bet amt
@@ -124,7 +124,7 @@ class Dealer extends EE
     return callback("Invalid user supplied") if not user?.username?
     return callback("Username should be a string") if typeof user.username != "string"
     return callback("Username must not be blank") if user.username == ""
-
+    
     username = user.username 
     # TODO: decrease verbosity
     if username in @games[table_name].twiddling
@@ -143,13 +143,13 @@ class Dealer extends EE
     delete seats[index]
     seats = seats.filter((d) -> typeof d != "undefined") # Table sizes are small so O(n) is no biggie
     delete @games[table_name].players[username]
-
+    
     @emit(@_signal(table_name), null, {
       actor: username,
       verb: "has left",
       target: "Table " + table_name,
       action: "left",
-      state: {table: @games[table_name]},
+      state: {table: @sanitize(table_name)},
       ts: +new Date()
     })
     # TODO: re-evaluate need for listener here
@@ -162,10 +162,10 @@ class Dealer extends EE
     
     callback(null, true)
   
-  sanitize: (table_name, callback) ->
+  sanitize: (table_name, callback = null) ->
     d = _.clone(@games[table_name])
     delete d.deck
-    callback(null, d)
+    callback(null, d) if callback
     return d
   
   logErrorCallback: (func_name, args, callback = null, msg) ->
@@ -178,11 +178,11 @@ class Dealer extends EE
     return @logErrorCallback("Dealer.place_bet", arguments, callback, "Bet cannot be less than the minimum (10)") if amount < @rules.bet.min
     return @logErrorCallback("Dealer.place_bet", arguments, callback, "No such table found") if not @games[table_name]
     self = this
-
+    
     # Reset Player-Join Grace Period
     # clearTimeout(@games[table_name].join_timer) # TODO: timer is used twice for diff reasons, poss simult
     # delete @games[table_name].join_timer
-
+    
     # Set bet for player & restart grace period if needed
     util.debug("setting bet of #{amount} for #{user.username} in Table #{table_name}")
     error = @_set_bet(table_name, user, amount)
@@ -196,7 +196,7 @@ class Dealer extends EE
     #   # @games[table_name].idle_timer = setTimeout((() ->
     #   #   clearTimeout(@games[table_name].idle_timer)
     #   #   delete @games[table_name].idle_timer
-
+    
     #   #   first_player = self.games[table_name].players[self.games[table_name].seat[0]]
     #   #   if first_player.action == null # first_player is still idle
     #   #     self._set_player_idle(table_name, first_player)
@@ -212,7 +212,7 @@ class Dealer extends EE
   start_game: (table_name) ->
     throw "No such table exists" if not @games[table_name]?
     @games[table_name].hand_in_progress = true
-
+    
     # Bring Queued players in
     for u in @games[table_name].queued
       @games[table_name].seats.push(u.username)
@@ -235,6 +235,7 @@ class Dealer extends EE
       })
       @games[table_name].deck.shuffle()
     
+    
     # Deal out cards mimicking real dealer
     @_initial_deal(table_name)
     @_initial_deal(table_name)
@@ -243,18 +244,18 @@ class Dealer extends EE
     hands = _.clone(@games[table_name].hands)
     hands.dealer = []
     hands.dealer.push(@games[table_name].dealer.hand[0])
-
+    
     blackjack_d = @_is_blackjack(@games[table_name].dealer.hand)
     if blackjack_d or not @rules.use_hole
       hands.dealer.push(@games[table_name].dealer.hand[1])
-
+      
     # Emit state for client-side rendering
     game_state = {
       action: "start",
       state: {hands: hands},
     }
     @emit(@_signal(table_name), null, game_state)
-
+    
     util.debug("========================")
     util.debug("Game starts with:")
     util.debug("Dealer has: #{@_hand_value(@games[table_name].dealer.hand)} (#{JSON.stringify(@games[table_name].dealer.hand)})")
@@ -263,7 +264,7 @@ class Dealer extends EE
       util.debug("#{nametag} has: #{@_hand_value(@games[table_name].hands[nametag])} (#{JSON.stringify(@games[table_name].hands[nametag])})")
       util.debug("-----------------------")
     util.debug("========================")
-
+    
     # Loop over players & interact one at a time
     self = this
     async.mapSeries(@games[table_name].seats, (nametag, callback) ->
@@ -288,25 +289,40 @@ class Dealer extends EE
         #   for nametag in self.games[table_name].seats
         #     self._set_player_idle(table_name, self.games[table_name].players[nametag])
         
-        if not blackjack_d and @rules.use_hole # Reveal hole card
-          self.emit(self._signal(table_name), null, {
-            actor: "The Dealer",
-            verb: "revealed",
-            object: "the hole card"
-            target: self.games[table_name].dealer.hand[1]
-          })
         
-        # After all players have played, dealer plays
-        while self.rules.dealer.can_hit(self._hand_value(table.dealer.hand))
-          table.dealer.hand.push(self.games[table_name].deck.pop())
         
-        self.final_evaluate(table_name, active_players)
+      return self.end_with_dealer(table_name, active_players)
     )
+    
+  end_with_dealer: (table_name, active_players) ->
+    # TODO: could probably move this into final eval
+    self = this
+    blackjack_d = @_is_blackjack(@games[table_name].dealer.hand)
+    if not blackjack_d and @rules.use_hole # Reveal hole card
+      self.emit(self._signal(table_name), null, {
+        actor: "The Dealer",
+        verb: "revealed",
+        object: "the hole card"
+        target: self.games[table_name].dealer.hand[1]
+      })
+    # After all players have played, dealer plays
+    while self.rules.dealer.can_hit(self._hand_value(@games[table_name].dealer.hand))
+      newcard = self.games[table_name].deck.pop()
+      @games[table_name].dealer.hand.push(newcard)
+      @emit(@_signal(table_name), null, {
+        actor: "dealer",
+        verb: "has hit",
+        state: {card: _.clone(newcard)}
+        action: "new card",
+        ts: +new Date()
+      })
+    
+    return self.final_evaluate(table_name, active_players)
   
   final_evaluate: (table_name, unfinished_players) ->
     throw "No such table exists" if not @games[table_name]?
     self = this
-
+    
     table = @games[table_name]
     dealer_hand = table.dealer.hand
     dealer_value = @_hand_value(table.dealer.hand)
@@ -320,75 +336,84 @@ class Dealer extends EE
       throw "final_evaluate.bust_p should be true for unfinished_player" if bust_p
       
       if bust_d
-        verb = "wins"
+        verb = "won"
         amt = @_win(table_name, nametag)
       else
         if hand_value == dealer_value
-          verb = "pushes"
+          verb = "pushed"
           amt = @_push(table_name, nametag)
         else if hand_value < dealer_value
-          verb = "loses"
+          verb = "lost"
           amt = @_lose(table_name, nametag)
         else
-          verb = "wins"
+          verb = "won"
           amt = @_win(table_name, nametag)
       util.debug("#{nametag} #{verb} #{amt} (#{hand_value} vs #{dealer_value})")
+      # @games[table_name].players[nametag].outcome = verb
     
     @finish_hand(table_name)
-
+    
   finish_hand: (table_name) ->
     throw "No such table found ({#table_name})" if not @games[table_name]?
     clearTimeout(@games[table_name].timer)
     delete @games[table_name].timer
     @games[table_name].countdown = null
-
+    
     util.debug("==================")
     util.debug("Game ends with:  ")
-    util.debug("Dealer has: #{@_hand_value(@games[table_name].dealer.hand)}")
+    util.debug("Dealer has: #{JSON.stringify(@_hand_value(@games[table_name].dealer.hand))}")
     for nametag in @games[table_name].seats
       util.debug("#{nametag} has: #{@_hand_value(@games[table_name].hands[nametag])} (#{JSON.stringify(@games[table_name].hands[nametag])})")
     util.debug("==================")
-
+    endstate = @sanitize(table_name)
+    
     for own username, player of @games[table_name].players
       @games[table_name].hands[username] = []
       @games[table_name].players[username].action = null
       # @games[table_name].players[username].bet = null # TODO: decide on repeatedly set bet or not
     
+    console.log("clearing hands and vars")
     @games[table_name].dealer.hand = []
     @games[table_name].twiddling = []
     @games[table_name].turn = null
     @games[table_name].hand_in_progress = false
-
+    
+    console.log("about to signal")
+    
     # If Singleplayer, this emit will ask user to deal
     @emit(@_signal(table_name), null, {
+      action: "hand over",
       actor: "The Dealer",
       verb: "ends",
       object: "the hand",
-      target: _.clone(@games[table_name].players)
+      state: {table: endstate}
       published: new Date()
     })
+    console.log("should have signaled")
+    for own username, player of @games[table_name].players
+      @games[table_name].players[username].outcome = null
   
-  interact_player: (table_name, user, callback = null) ->
+  interact_player: (table_name, user, callback = () ->) ->
     # This function is recursively called to update player's state upon decisions (or force decision via timeout)
     return @logErrorCallback("interact_player", arguments, null, "No such table found (#{table_name})") if not @games[table_name]?
     self = this
-
-    if not callback
-      if @games[table_name].turn_cb and @games[table_name].turn == user.username
-        callback = @games[table_name].turn_cb 
-      else
-        util.debug("FAIL: interact_player(#{table_name}, #{user.username}) has no callback or turn_cb (out of order execution)...")
-    else
-      @games[table_name].turn_cb = callback
-
-      intercepted_callback = callback
-      callback = (err, unfinished_player) ->
-        self.games[table_name].turn = null
-        intercepted_callback(err, unfinished_player)
-
+    
+    # if not callback
+    #   if @games[table_name].turn_cb and @games[table_name].turn == user.username
+    #     callback = @games[table_name].turn_cb 
+    #   else
+    #     util.debug("FAIL: interact_player(#{table_name}, #{user.username}) has no callback or turn_cb (out of order execution)...")
+    # else
+    #   @games[table_name].turn_cb = callback
+      
+    #   intercepted_callback = callback
+    #   callback = (err, unfinished_player) ->
+    #     self.games[table_name].turn = null
+    #     intercepted_callback(err, unfinished_player)
+        
     clearTimeout(@games[table_name].interact_timer)
     delete @games[table_name].interact_timer
-
+    
     table = @games[table_name]
     username = user.username
     hand = table.hands[username]
@@ -399,35 +424,41 @@ class Dealer extends EE
     bj_p = @_is_blackjack(hand)
     bj_d = @_is_blackjack(dealer_hand)
     wh_d = _.clone(table.players[username].action || null)
-
+    
     # Break for important status conditions
     if bj_d and bj_p
       @_push(table_name, username)
-      return callback(null, undefined)
+      # return callback(null, undefined)
+      return @end_with_dealer(table_name, [])
     
     if bj_d and not bj_p
       @_lose(table_name, username)
-      return callback(null, undefined)
+      # return callback(null, undefined)
+      return @end_with_dealer(table_name, [])
     
     if not bj_d and bj_p
       @_win_blackjack(table_name, username)
-      return callback(null, undefined)
+      # return callback(null, undefined)
+      return @end_with_dealer(table_name, [])
     
     if bust_p
       @_lose(table_name, username) # even if dealer also busted
-      return callback(null, undefined)
+      # return callback(null, undefined)
+      return @end_with_dealer(table_name, [])
     
     if @_hand_value(hand) == 21
-      return callback(null, username)
-
+      # return callback(null, username)
+      return @end_with_dealer(table_name, [username])
+      
     if not wh_d # player's .action currently null => "First Move"
       # Request a decision from player
       @emit(@_signal(table_name), null, {
         actor: username,
-        verb: "has turn",
+        action: "has turn",
+        verb: "has turn", # TODO: switch from actions to verbs?
         published: +new Date()
       })
-
+      
       if @_single_player(table_name)
         # No time limit in single player mode
         # TODO: on player queue, set inactivity timer, set this player to idle & seat other
@@ -445,28 +476,47 @@ class Dealer extends EE
     else
       # Handle actions
       table.players[username].action = null
-
+      
       # FUTURE: additional actions go here
       switch wh_d
         when "stand"
           util.debug("#{username} stands with #{JSON.stringify(@_hand_value(table.hands[username]))}, #{JSON.stringify(table.hands[username])}")
-          return callback(null, username)
+          # callback(null, username) if callback
+          # return @interact_player(table_name, user) # multiplayer
+          return @end_with_dealer(table_name, [user.username])
         when "hit"
           newcard = @games[table_name].deck.pop()
-          table.hands[username].push(newcard)
+          ccard = _.clone(newcard)
+          console.log("ccard: " + JSON.stringify(ccard))
+          table.hands[username].push(ccard)
           ihand = @games[table_name].hands[username]
           handval = @_hand_value(ihand)
           util.debug("#{username} hits to #{JSON.stringify(handval)}, #{JSON.stringify(ihand)}")
-
-          @emit(@_signal(table_name), null, {
-            actor: username,
-            verb: "has hit",
-            state: {card: newcard}
-            action: "new card",
-            ts: +new Date(newcard)
-          })
-
-          return @interact_player(table_name, user, callback)
+          util.debug("should signal to @_signal(table_name) here")
+          
+          try
+            s = @_signal(table_name)
+          catch error
+            util.debug("error with @_signal for #{username} (callback? = #{callback?})")
+            s = "table::#{table_name}"
+          
+          try
+            @emit(s, null, {
+              actor: username,
+              verb: "has hit",
+              state: {card: ccard}
+              action: "new card",
+              ts: +new Date()
+            })
+          catch error
+            util.debug("unable to emit for #{username} @ #{table_name}")
+            util.debug(JSON.stringify(error))
+          
+          console.log("just emit'd")
+          console.log("iplyr? #{@interact_player?}")
+          console.log("callback? #{callback?}")
+          return @interact_player(table_name, user, callback) if callback
+          return @interact_player(table_name, user)
         else 
           @logErrorCallback("interact_player", arguments, callback, "Unsupported player action (#{wh_d}) requested.")
           return callback(null, username) # assume idle player wants to stand
@@ -496,11 +546,11 @@ class Dealer extends EE
   # deal_one: (table_name) ->
     # throw "No such table exists" if not @games[table_name]?
     # @_deal(table_name)
-
+    
   # deal: (table_name) ->
     # throw "No such table exists" if not @games[table_name]?
     # @games[table_name].hand_in_progress = true
-
+    
     # # Bring Queued players in
     # for u in @games[table_name].queued
     #   @games[table_name].seats.push(u.username)
@@ -524,33 +574,66 @@ class Dealer extends EE
     # # Deal out cards mimicking real dealer
     # @_deal(table_name)
     # @_deal(table_name)
-
+    
     # @emit(@_signal(table_name), null, {
     #   username: "Dealer",
     #   action: "dealt",
     #   ts: +new Date()
     # })
-
+    
     # # Evaluate results
     # @evaluate(table_name)
-
+  
   request_action: (table_name, user, action, callback = () -> ) ->
     return callback("No such table found") if not @games[table_name]?
-
+    
     # Validate & set/request action
     # util.debug("requesting action (#{table_name}, #{user.username}, #{action}")
+    username = user.username
     switch action
       when "hit", "stand"
         util.debug("#{user.username} calls #{action}")
-        return callback("Cannot #{action} while hand not in progress") if not @games[table_name].hand_in_progress
-        return callback("Cannot #{action} until your turn") if @games[table_name].turn and user.username != @games[table_name].turn
+        if not @games[table_name].hand_in_progress
+          @emit(@_signal(table_name), null, {
+            actor: username,
+            verb: "is not allowed to hit/stand",
+            # state: {card: ccard}
+            action: "invalid",
+            ts: +new Date()
+          })
+          return callback("Cannot #{action} while hand not in progress") || console.log('HIP') if not @games[table_name].hand_in_progress
+        return callback("Cannot #{action} until your turn") || console.log('not turn') if @games[table_name].turn and user.username != @games[table_name].turn
         @games[table_name].players[user.username].action = action
-        return callback(null, @interact_player(table_name, user))
+        callback(null, null) if callback
+        return @interact_player(table_name, user)
       when "deal"
-        util.debug("#{user.username} calls to #{action}")
-        return callback("Cannot request deal while hand in progress") if @games[table_name].hand_in_progress
+        console.log(user)
+        util.debug("#{user.username} calls to #{action}")# Withhold bet
+        play = @games[table_name].players[user.username]
+        console.log(play.purse)
+        play.purse += @rules.player_reward["withhold"](play.bet)
+        console.log("deal => adjusted purse = #{play.purse}")
+        if play.purse <= 0
+          @emit(@_signal(table_name), null, {
+            actor: username,
+            verb: "got bailed out",
+            state: {purse: 500}
+            action: "broke",
+            ts: +new Date()
+          })
+        
+        
+        if @games[table_name].hand_in_progress
+          @emit(@_signal(table_name), null, {
+            actor: username,
+            verb: "is not allowed to deal again",
+            # state: {card: ccard}
+            action: "invalid",
+            ts: +new Date()
+          })
+          return callback("Cannot request deal while hand in progress") 
         return callback("Cannot request deal with a group") if @games[table_name].seats.length > 1
-
+        
         return callback(null, @start_game(table_name))
       else 
         return callback("Unauthorized action performed (#{action})")
@@ -558,6 +641,13 @@ class Dealer extends EE
   # "Private" methods
   ## Gameplay::Hand handle outcomes
   _end: (table_name, username, outcome) ->
+    outcomes = {
+      "win": "won",
+      "lose": "lost",
+      "blackjack": "won big",
+      "push": "push"
+    }
+    @games[table_name].players[username].outcome = outcomes[outcome] || "lost"
     # FUTURE: check if user is already twiddling
     bet = @games[table_name].players[username].bet
     reward = @rules.player_reward[outcome](bet)
@@ -566,13 +656,13 @@ class Dealer extends EE
     return reward
   
   _lose: (table_name, username) -> @_end(table_name, username, "lose")
-
+  
   _win: (table_name, username) -> @_end(table_name, username, "win")
-
+  
   _win_blackjack: (table_name, username) -> @_end(table_name, username, "blackjack")
   
   _push: (table_name, username) -> @_end(table_name, username, "push")
-
+  
   ## Gameplay::Hand detection status conditions
   _is_blackjack: (hand) ->
     return false if hand.length > 2
@@ -588,13 +678,13 @@ class Dealer extends EE
     util.debug("_waiting(#{table_name}, #{JSON.stringify(user)})")
     util.debug("seats.length == 1?   #{@games[table_name].seats.length == 1 }")
     return false if @games[table_name].seats.length == 1 
-
+    
     for own username, player of @games[table_name].players
       util.debug("_waiting.loop:", username, player, player.action)
       if player.action == null
         return false
     return true
-
+    
   _in_play: (table_name, username) ->
     util.debug("_in_play(#{table_name}, #{username}) action: ")
     util.debug(@games[table_name].players[username].action)
@@ -607,9 +697,9 @@ class Dealer extends EE
   _card_value: (index) ->
     throw "can't run _card_value on Ace" if index == 0
     throw "can't run _card_value on card higher than max" if index > 13 # TODO: use CardFactory/Deck
-    return 10 if index > 10
-    return index
-
+    return 10 if index > 9
+    return index + 1
+    
   _hand_value: (hand) ->
     # hand ranks are zero-indexed: Ace = 0
     value = 0
@@ -623,7 +713,7 @@ class Dealer extends EE
         else
           value += 11
     return value
-
+    
   _get_player_hand: (table_name, user) ->
     self = this
     return @games[table_name].hands[user.username].map((c) ->
@@ -635,11 +725,11 @@ class Dealer extends EE
   _initial_deal: (table_name) ->
     for nametag in @games[table_name].seats
       username = @games[table_name].players[nametag].username
-
+      
       twiddling_p = username in @games[table_name].twiddling
       idle_p = username in @games[table_name].idle
       stand_p = @games[table_name].players[username].action == "stand"
-
+      
       if twiddling_p or idle_p or stand_p
         continue
       else
@@ -685,7 +775,7 @@ class Dealer extends EE
   _set_bet: (table_name, user, amount) ->
     return @logErrorCallback("_set_bet", arguments, null, "no such table_name found") && "no such table_name found" if not @games[table_name]?
     @games[table_name].players[user.username].bet = amount
-    @games[table_name].players[user.username].purse += @rules.player_reward["withhold"](amount)
+    # @games[table_name].players[user.username].purse += @rules.player_reward["withhold"](amount)
     return null
   
   ## Common Array based functions
@@ -726,15 +816,12 @@ class Dealer extends EE
   
   _seat_user: (table_name, user) ->
     @games[table_name].seats.append(user.username) if user.username not in @games[table_name].seats
-
+    
   _unseat_user: (table_name, user) ->
     index = @games[table_name].seats.indexOf(user.username)
     if index >= 0
       delete @games[table_name].seats[index]
       @games[table_name].seats = @games[table_name].seats.filter(stripUndefineds)
-  
 
-  
-  
-    
+
 module.exports = Dealer

@@ -192,7 +192,7 @@ section#play {
       .purse {
         width: @3cols;
 
-        #purse_value {
+        #purse_value_container {
           color: #232;
           height: @menu-height;
           width: 132/@em;
@@ -231,7 +231,7 @@ section#play {
           margin-right: (@gutter - 2)/@em;
         }
         .seats, .locked {
-          width: @1col;
+          max-width: @1col;
           text-align: center;
         }
         .seats {
@@ -246,7 +246,23 @@ section#play {
     }  
   }
   
-
+  #gamelog {
+    height: 14em;
+    background-color: #FFFCCF;
+    overflow: scroll;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 1px 0 #ffffff;
+    -moz-box-shadow: inset 0 1px 0 #ffffff;
+    box-shadow: inset 0 1px 0 #ffffff;
+    border: 2px solid gray;
+    margin-bottom: .5em;
+    padding: 10/@em;
+    p {
+      font-size: .7em;
+    }
+  }
   .current_table {
     @player-height: 36/@em;
     
@@ -311,6 +327,10 @@ section#play {
         .username {
           float: left;
           width: 73/@em;
+          color: white;
+        }
+        .username.turn {
+          color: yellow;
         }
       }
       .playingCards {

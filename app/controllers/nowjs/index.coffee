@@ -175,6 +175,8 @@ module.exports = (nowjs, nitrous, app) ->
     # TODO: clean up all connections & listeners
     client = this
     console.log("#{client.user.clientId} disconnected")
+    
+    console.log("purse amt @ disconnection = " + client.player.purse) if client.player?.purse?
 
     # TODO: persist tables, data, etc
     sid = decodeURIComponent(client.user.cookie["connect.sid"])
@@ -187,7 +189,18 @@ module.exports = (nowjs, nitrous, app) ->
     
     Lobby.leave(client.now.room, client.now.player, (err, tables) ->)
   )
-
+  
+  # cleanup = (callback) ->
+  #   nowjs.getGroups((groups) ->
+  #     for g in groups
+  #       nowjs.getGroup(g)
+  #   )
+  
+  # process.once("SIGUSR2", () ->
+  #   cleanup(() ->
+  #     process.kill(process.pid, 'SIGUSR2')  
+  #   )
+  # )
   
   
   return everyone
