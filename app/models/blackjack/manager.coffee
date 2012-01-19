@@ -18,7 +18,7 @@ class Manager extends EE
     # Note: if you add to this, keys must be shallow (1 deep)
     base = {
       players: [],
-      max_players: 6,
+      max_players: 1,
       betrange: [10, 100],
       private: null
     }
