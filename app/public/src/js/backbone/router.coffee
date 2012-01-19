@@ -9,6 +9,8 @@ class LobbyRouter extends Backbone.Router
   },
 
   index: () ->
+    now.stand_up(now.room) if now.room != "Lobby"
+      
     now.get_room((err, room) ->
       console.log("index called() with room = #{room}")
       if room == "Lobby"
@@ -20,6 +22,7 @@ class LobbyRouter extends Backbone.Router
   list_tables: () ->
     now.get_tables_list((err, tables) ->
       return App.Router.navigate("lobby", true) if err == "Table is full"
+      console.log(err)
       
       ctx = {}
       ctx.tables = tables
@@ -34,6 +37,7 @@ class LobbyRouter extends Backbone.Router
 
   sit_down: (name) ->
     # username = now.player.username
+    now.stand_up(now.room) if now.room != "Lobby"
     console.log("Router.sit_down(): does now.sit_down exist? #{now?.sit_down?}")
     table_name = @table_name(name)
     App.Views.Table.render(table_name)

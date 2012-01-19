@@ -6,7 +6,7 @@ util = require("util")
 
 class Manager extends EE
   signal: "tables"
-  constructor: (@max_tables = 5) ->
+  constructor: (@max_tables = 14) ->
     @tables = {}
     @members = {}
     @names = {} # TODO: Could get quite large & does not persist through restarts: please fix
@@ -87,8 +87,9 @@ class Manager extends EE
         private: v.private,
         betrange: v.betrange,
       }
-
       t.push(outobj)
+      # if seats > taken
+      #   t.push(outobj)
     return t
 
 
@@ -108,9 +109,22 @@ class Manager extends EE
   sit: (table_name, user, onUpdate, callback) ->
     util.debug("inside manager sit")
     return callback("Table '#{table_name}' was not found") if not @tables[table_name]?
-    return callback("Table is full") if @_already_full(table_name)
     return callback("User must exist & have username") if not user or not user.username
     return callback("User must register by join()") if user.username not in _.keys(@members)
+    
+    if @_already_full(table_name)
+      games = process.Dealer.games[table_name]
+      booted = false
+      for player_name in games.seats
+        idled = false
+        last_action = games.players[player_name].last_action
+        if last_action and (+new Date() - last_action >= (2*process.Dealer.rules.countdown))
+          process.Dealer.remove_player(table_name, games.players[player_name], () ->)
+          booted = true
+          break
+      return callback("Table is full") if user.username not in @tables[table_name].players
+      return callback("Table is full") if not booted
+      
     # return callback("Table is private") # FUTURE: enable if users can create rooms
     util.debug("after manager.sit error checking")
 

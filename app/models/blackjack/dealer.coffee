@@ -589,6 +589,7 @@ class Dealer extends EE
     
     # Validate & set/request action
     # util.debug("requesting action (#{table_name}, #{user.username}, #{action}")
+    @games[table_name].players[user.username].last_action = +new Date()
     username = user.username
     switch action
       when "hit", "stand"

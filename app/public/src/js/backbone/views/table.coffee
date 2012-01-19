@@ -142,10 +142,16 @@ class Table extends BaseView
         console.log(arguments)
         window.App.Views.Table.username = username = now.player.username
         console.log("bet set by #{username}")
-        player = {
-          username: username,
-          purse: table.players[username].purse
-        }
+        try
+          player = {
+            username: username,
+            purse: table.players[username].purse
+          }
+        catch error
+          # alert("")
+          alert("Error occurred; redirecting you to Lobby")
+          return App.Router.navigate("lobby", true)
+        
         players = table.seats.filter((d) ->
           if d == 'shy-fog-62' #username
             player = table.players[d]

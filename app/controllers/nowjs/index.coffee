@@ -24,7 +24,7 @@ module.exports = (nowjs, nitrous, app) ->
   everyone = nowjs.initialize(app, {socketio: nitrous.settings.socketio})
 
   Lobby = new Manager()
-  Bernie = new Dealer(Lobby.tables)
+  Bernie  = process.Dealer = new Dealer(Lobby.tables)
 
   Lobby.on(Lobby._signal("update"), (err, data, callback) ->
     Bernie.update(err, data, callback)
@@ -60,7 +60,7 @@ module.exports = (nowjs, nitrous, app) ->
     util.debug("about to Lobby.sit(#{name})")
     # on_update ?= client.now.receive_action
     Lobby.sit(name, stripNowjs(client.now.player, "player in sit_down"), listener, (err, table) ->
-      return callback(err) if err
+      return console.log(err) and callback(err) if err
       client.now.room = name
       callback(err, table)
     )
