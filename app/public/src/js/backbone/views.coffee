@@ -31,25 +31,8 @@ class Lobby extends BaseView
     this.rm()
     App.Router.navigate("table/" + @enc(event.target.id), true)
 
-class Table extends BaseView
-  el: $("#current_table")
-  tmpl: "partials/blackjack/table"
-
-  render: (context) ->
-    console.log("rendering #{@tmpl} with window.testcontext")
-    window.testcontext = context
-    this.el.hide()
-      .html(@template(context))
-      .slideDown()
-      this.delegateEvents()
-    return this
-
-
-
-
 App.Views.Base = BaseView
 App.Views.Lobby = new Lobby()
-App.Views.Table = new Table()
 
 
 

@@ -1,18 +1,24 @@
 {{#table}}
   <div class="current_table">
-    {{> blackjack-dealer }}
+    <div id="dealer-box">
+      {{> blackjack-dealer }}
+    </div>
 
-    {{#player}}
-      {{> blackjack-player }}
-    {{/player}}
+    <div class="player-box">
+      {{#player}}
+        {{> blackjack-player }}
+      {{/player}}
+    </div>
 
-    {{#players}}
-      {{> blackjack-players }}
-    {{/players}}
-
-    {{#emptyseats}}
-      {{> blackjack-emptyseat }}
-    {{/emptyseats}}
+    <div class="players-boxes">
+      {{#players}}
+        {{> blackjack-players }}
+      {{/players}}
+      
+      {{#emptyseats}}
+        {{> blackjack-emptyseat }}
+      {{/emptyseats}}
+    </div>
     <div class="clear"></div>
   </div>
 {{/table}}

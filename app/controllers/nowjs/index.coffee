@@ -55,10 +55,11 @@ module.exports = (nowjs, nitrous, app) ->
   #   callback("this function is deprecated") if callback?
   #   # return "deprecated"
   
-  everyone.now.sit_down = (name, callback) ->
+  everyone.now.sit_down = (name, listener, callback) ->
     client = this
     util.debug("about to Lobby.sit(#{name})")
-    Lobby.sit(name, stripNowjs(client.now.player, "player in sit_down"), client.now.receive_action, (err, table) ->
+    # on_update ?= client.now.receive_action
+    Lobby.sit(name, stripNowjs(client.now.player, "player in sit_down"), listener, (err, table) ->
       return callback(err) if err
       client.now.room = name
       callback(err, table)
@@ -100,7 +101,7 @@ module.exports = (nowjs, nitrous, app) ->
   everyone.now.stand = (callback = () ->) -> 
     client = this
     Bernie.request_action(client.now.room, stripNowjs(client.now.player, "player in stand"), "stand")
-
+  
   everyone.now.deal = (callback = () ->) ->
     # Usage: now.deal()
     client = this
@@ -184,7 +185,7 @@ module.exports = (nowjs, nitrous, app) ->
     nowjs.getGroup(client.now.room).removeUser(client.user.clientId)
 
     
-    # Lobby.leave(client.now.room, client.now.player, (err, tables) ->)
+    Lobby.leave(client.now.room, client.now.player, (err, tables) ->)
   )
 
   

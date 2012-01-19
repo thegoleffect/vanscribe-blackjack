@@ -1,3 +1,7 @@
+.vanscribe {
+  
+}
+
 @museo: "museo-1", "museo-2", "Helvetica Neue", sans-serif;
 
 .shadow {
@@ -264,7 +268,7 @@ section#play {
       -moz-border-radius: 3px;
       border-radius: 3px;
       color: white;
-      
+
       .seat {
         width: @16cols;
       }
@@ -273,6 +277,7 @@ section#play {
         font-size: .75em;
         margin-left: 10/@em;
         text-shadow: 1px 1px 2px #333;
+        line-height: @player-height;
       }
       
       .user, .hand {
@@ -280,7 +285,7 @@ section#play {
       }
       .user {
         width: @2cols;
-        height: @player-height;
+        min-height: @player-height;
         /*overflow: hidden; */
         float: left;
         z-index: 5;
@@ -308,24 +313,61 @@ section#play {
           width: 73/@em;
         }
       }
-      .hand {
+      .playingCards {
         width: @2cols;
+        overflow: hidden;
         float: left;
-        img {
-          margin-left: 16/@em;
-          margin-top: 4px;
-          float: left;
+        height: @player-height;
+      }
+      .hand {
+        width: @16cols;
+        position: relative;
+
+        .card {
+          /*width: 3.3em;*/
+          width: 4em;
+          position: absolute;
+          top: 4/@em;
+          box-shadow: .24em .24em .48em #333;
+          -webkit-box-shadow: .24em .24em .48em #333;
+          -moz-box-shadow: .24em .24em .48em #333;
         }
-        /* z-index: 6; */
+        .card:nth-child(1) { left: 0; }
+        .card:nth-child(2) { left: 10/@em; }
+        .card:nth-child(3) { left: 20/@em; }
+        .card:nth-child(4) { left: 30/@em; }
+        .card:nth-child(5) { left: 40/@em; }
+        .card:nth-child(6) { left: 50/@em; }
+        .card:nth-child(7) { left: 60/@em; }
+        .card:nth-child(8) { left: 70/@em; }
+        .card:nth-child(9) { left: 80/@em; }
+        .card:nth-child(10) { left: 90/@em; }
+        .card:nth-child(11) { left: 100/@em; }
+        .card:nth-child(12) { left: 110/@em; }
+        .card:nth-child(13) { left: 120/@em; }
+        .card:nth-child(14) { left: 130/@em; }
+        .card:nth-child(15) { left: 140/@em; }
+        .card:nth-child(16) { left: 150/@em; }
+        .card:nth-child(17) { left: 160/@em; }
+        .card:nth-child(18) { left: 170/@em; }
+        .card:nth-child(19) { left: 180/@em; }
+        .card:nth-child(20) { left: 190/@em; }
+        .card:nth-child(21) { left: 200/@em; }
+        .card:nth-child(22) { left: 210/@em; }
       }
     }
-    #dealer {
+    .dealer {
       margin-bottom: 8/@em;
     }
-    #self {
+    .self {
       margin-bottom: 8/@em;
       height: @player-height * 1.6;
+      .playingCards {
+        height: @player-height * 1.6;
+      }
     }
+
+    
   }
 }
 

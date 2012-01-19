@@ -27,6 +27,7 @@ class NowHandlers
     now.receive_action = (err, data) ->
       console.log("received action")
       console.log(err, data)
+      App.KV[data.action] = data
       # now.get_hands() if data.action == "dealt"
     
     # TODO: poll until now pockets synchronized

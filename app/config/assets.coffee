@@ -31,6 +31,7 @@ assetSettings = {
       "../../src/js/nowhandlers.coffee",
       "../../src/js/backbone/router.coffee",
       "../../src/js/backbone/views.coffee",
+      "../../src/js/backbone/views/table.coffee",
       "../../.templates.js",
     ],
     "preManipulate": {
