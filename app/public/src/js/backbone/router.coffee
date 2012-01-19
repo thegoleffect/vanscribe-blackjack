@@ -19,6 +19,8 @@ class LobbyRouter extends Backbone.Router
   
   list_tables: () ->
     now.get_tables_list((err, tables) ->
+      return App.Router.navigate("lobby", true) if err == "Table is full"
+      
       ctx = {}
       ctx.tables = tables
 

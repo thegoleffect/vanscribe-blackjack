@@ -165,6 +165,7 @@ class Manager extends EE
   
   _already_full: (table_name) ->
     t = @tables[table_name]
-    return t.players.length == (t.max_players - 1)
+    console.log("#{table_name} has #{t.players.length} players out of #{t.max_players}")
+    return t.players.length >= t.max_players
 
 module.exports = Manager
