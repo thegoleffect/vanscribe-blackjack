@@ -4,6 +4,7 @@ fs = require("fs")
 less = require("less")
 spawn = require("child_process").spawn
 path = require("path")
+util = require("util")
 # parser = new(less.Parser)({
 #   paths: [
 #     # path.join(__dirname, ".."),
@@ -24,7 +25,12 @@ notify = (msg) ->
 module.exports = {
   coffeeRenderer: (file, path, index, isLast, callback) ->
     if /\.coffee/.test(path)
-      output = coffee.compile(file)
+      try
+        output = coffee.compile(file)  
+      catch error
+        util.debug("unable to compile #{path}")
+        throw error
+      
       callback(output)
     else
       callback(file)
@@ -44,7 +50,6 @@ module.exports = {
         console.log("[err]: unable to create less parser")
         throw error
       
-
       try
         parser.parse(file, (err, tree) ->
           if err
@@ -59,12 +64,6 @@ module.exports = {
         console.warn(error)
         throw error
       
-      # less.render(file, (err, css) ->
-      #   if err
-      #     console.log(err)
-      #   else
-      #     callback(css)
-      # )
     else
       callback(file)
   

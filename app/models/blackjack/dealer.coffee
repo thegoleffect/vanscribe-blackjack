@@ -45,7 +45,7 @@ class Dealer extends EE
     return callback(err) if err
     return callback("Data must exist & supply a .type") if not data?.action?
 
-    util.debug("Lobby triggered: update(#{err}, #{JSON.stringify(data)})")
+    console.log("Lobby triggered: update(#{err}, #{JSON.stringify(data)})")
     switch data.action
       when "sit"
         return @add_player(data.table_name, data.user, data.onUpdate, callback)
@@ -158,8 +158,10 @@ class Dealer extends EE
     return callback(msg) if callback?
   
   place_bet: (table_name, user, amount, callback) ->
+    return @logErrorCallback("Dealer.place_bet", arguments, callback, "Bet must be a non-zero integer") if not amount or not _.isNumber(amount) or _.isNaN(amount)
     return @logErrorCallback("Dealer.place_bet", arguments, callback, "Bet cannot be more than the maximum (100)") if amount > @rules.bet.max
     return @logErrorCallback("Dealer.place_bet", arguments, callback, "Bet cannot be less than the minimum (10)") if amount < @rules.bet.min
+    return @logErrorCallback("Dealer.place_bet", arguments, callback, "No such table found") if not @games[table_name]
     self = this
 
     # Reset Player-Join Grace Period
@@ -167,9 +169,12 @@ class Dealer extends EE
     # delete @games[table_name].join_timer
 
     # Set bet for player & restart grace period if needed
-    @_set_bet(table_name, user, amount)
-    @games[table_name].players[user.username].last_action = +new Date()
-
+    error = @_set_bet(table_name, user, amount)
+    if error
+      callback(response)
+    else
+      @games[table_name].players[user.username].last_action = +new Date()
+      callback(null, amount)
     # if @games[table_name].hand_in_progress and @_single_player(table_name)
     #   util.debug("Single Player idle check not yet implemented... but called()")
     #   # @games[table_name].idle_timer = setTimeout((() ->
@@ -438,13 +443,20 @@ class Dealer extends EE
           @logErrorCallback("interact_player", arguments, callback, "Unsupported player action (#{wh_d}) requested.")
           return callback(null, username) # assume idle player wants to stand
   
-  get_purse: (table_name, user, callback = null) ->
-    try
-      purse = @games[table_name].players[user.username].purse
-    catch error
-      purse = null
-    callback(null, purse) if callback
-    return purse
+  get_purse: (table_name, user, callback) ->
+    # TODO: switch to a more authoritative version
+    util.debug("Dealer.get_purse(" + JSON.stringify(arguments) + ")")
+    if table_name not in _.keys(@games)
+      console.log("#{user.username} is currently not seated => #{user.purse}")
+      return callback(null, user.purse || 500)
+    # try
+    #   purse = @games[table_name].players[user.username].purse
+    # catch error
+    #   util.debug("get_pursex" + "error: " + JSON.stringify(error))
+    #   purse = null
+    # callback(null, purse) if callback
+    # console.log("get_purse_g = ", JSON.stringify(purse))
+    # return purse
   
   get_dealer_hand: (table_name) ->
     cards = []
@@ -642,6 +654,7 @@ class Dealer extends EE
   
   ## Gameplay mutators
   _set_bet: (table_name, user, amount) ->
+    return @logErrorCallback("_set_bet", arguments, null, "no such table_name found") if not @games[table_name]?
     @games[table_name].players[user.username].bet = amount
     @games[table_name].players[user.username].purse += @rules.player_reward["withhold"](amount)
   

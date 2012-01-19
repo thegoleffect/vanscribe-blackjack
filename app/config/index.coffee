@@ -16,8 +16,9 @@ init_settings = (app) ->
 
   init_redis_session(app, settings, settings.sessions.redis)
 
-  if process.env.NODE_ENV == "production"
-    settings.socketio.transports.shift() # disable websockets on production
+  # if process.env.NODE_ENV == "production"
+  #   settings.socketio.transports.shift() # disable websockets on production
+  settings.socketio.transports.shift()
 
   console.log('initialized settings')
   return settings

@@ -7,8 +7,9 @@ Dealer = require("../../models/blackjack/dealer")
 EE = require("../../models/common/ee")
 Manager = require("../../models/blackjack/manager")
 
-stripNowjs = (obj) ->
+stripNowjs = (obj, where = null) ->
   if typeof obj != 'object'
+    util.debug(where) if where
     throw "Can't stripNowjs on a #{typeof obj}"
   else
     clone = {}
@@ -31,10 +32,10 @@ module.exports = (nowjs, nitrous, app) ->
   
   ## Nowjs User Functions
   ## TODO: namespace the functions somehow
-  everyone.now.room = (callback = null) ->
+  everyone.now.get_room = (callback) ->
     client = this
     util.debug("client requested room name: #{client.now.room}")
-    callback(client.now.room) if callback?
+    callback(null, client.now.room)
   
   everyone.now.sendChat = (message) ->
     client = this
@@ -54,11 +55,10 @@ module.exports = (nowjs, nitrous, app) ->
   #   callback("this function is deprecated") if callback?
   #   # return "deprecated"
   
-  everyone.now.sit_down = (name) ->
+  everyone.now.sit_down = (name, callback) ->
     client = this
-    client.now.room = name
-    # util.debug("about to Lobby.sit()")
-    Lobby.sit(name, stripNowjs(client.now.player), client.now.receive_action, client.now.load_game)
+    util.debug("about to Lobby.sit(#{name})")
+    Lobby.sit(name, stripNowjs(client.now.player, "player in sit_down"), client.now.receive_action, callback)
   
   everyone.now.stand_up = (callback = null) ->
     client = this
@@ -78,27 +78,28 @@ module.exports = (nowjs, nitrous, app) ->
   ## Gameplay related functions
   everyone.now.bet = (amount, callback) ->
     client = this
-    Bernie.place_bet(client.now.room, stripNowjs(client.now.player), amount, callback)
+    Bernie.place_bet(client.now.room, stripNowjs(client.now.player, "player in bet"), amount, callback)
   
   everyone.now.get_table = (callback = () -> ) ->
     client = this
     return Bernie.sanitize(client.now.room, callback)
   
-  everyone.now.get_purse = () ->
-    return Bernie.get_purse(client.now.room, stripNowjs(client.now.player))
+  everyone.now.get_purse = (callback = null) ->
+    client = this
+    return Bernie.get_purse(client.now.room, stripNowjs(client.now.player, "player in get_purse"), callback)
 
   everyone.now.hit = (callback = () ->) ->
     client = this
-    return Bernie.request_action(client.now.room, stripNowjs(client.now.player), "hit")
+    return Bernie.request_action(client.now.room, stripNowjs(client.now.player, "player in hit"), "hit")
   
   everyone.now.stand = (callback = () ->) -> 
     client = this
-    Bernie.request_action(client.now.room, stripNowjs(client.now.player), "stand")
+    Bernie.request_action(client.now.room, stripNowjs(client.now.player, "player in stand"), "stand")
 
   everyone.now.deal = (callback = () ->) ->
     # Usage: now.deal()
     client = this
-    Bernie.request_action(client.now.room, stripNowjs(client.now.player), "deal", callback)
+    Bernie.request_action(client.now.room, stripNowjs(client.now.player, "player in deal"), "deal", callback)
     
   ## Development related functions (for testing stuff) TODO: delete these
   everyone.now.test_poke = (callback) ->
@@ -108,69 +109,75 @@ module.exports = (nowjs, nitrous, app) ->
   everyone.now.inspect = (callback) ->
     callback({Lobby: Lobby, Dealer: Bernie})
   
+  everyone.now.self = (callback) ->
+    client = this
+    callback(null, stripNowjs(client.now.player, "player in self"))
+  
 
   ## Nowjs Event Listeners
-  nowjs.on("connect", () ->
-    # TODO: give client a version #
+  nowjs.on("connect", () -> # TODO: give client a cliside js version # or md5
     client = this
-    client.now.room ?= "Lobby"
-    nowjs.getGroup(client.now.room).addUser(client.user.clientId)
 
-    # util.debug("just connected: client.now.player: ")
-    # util.debug(JSON.stringify(client.now.player))
-
-    # TODO: use updated nowjs session
     sid = decodeURIComponent(client.user.cookie["connect.sid"])
-    # util.debug("#{this.user.clientId} connected")
-    # util.debug("client.user.session:")
-    # util.debug(JSON.stringify(client.user.session))
-    # util.debug(JSON.stringify(nowjs.sessions[unescape(client.user.cookie["connect.sid"])]))
-
-    # TODO: log the connection
     app.session_store.get(sid, (err, session) ->
       throw err if err
 
-      util.debug("session for sid ('#{sid}''):")
-      util.debug(JSON.stringify(session))
-
+      util.debug("user #{client.user.clientId} connected (sid = '#{sid}''):" + JSON.stringify(session))
       if session.blackjack?
         # TODO: auth user
-        # util.debug("before setting from session.blackjack")
-        # util.debug(JSON.stringify(client.now.player))
-        # util.debug("======================")
-        # util.debug("session.blackjack to json")
-        # util.debug(JSON.stringify(session.blackjack))
-        
-        # client.now.player = session.blackjack
-        if not client.now.player?
+        if not client.now.player
+          # console.log("setting client.now.player")
+
+          # client.now.set({
+          #   username: session.blackjack.username,
+          #   purse: session.blackjack.purse
+          # }, () ->
+          #   util.debug("now.player is set")
+          # )
+          client.now.room ?= session.blackjack.room || "Lobby"
+          nowjs.getGroup(client.now.room).addUser(client.user.clientId)
+          # client.now.player = session.blackjack
           client.now.player = {}
           client.now.player["username"] = session.blackjack.username if session.blackjack.username?
-          client.now.player["purse"] = session.blackjack.purse if session.blackjack.purse?
+          client.now.player["purse"] = session.blackjack.purse || 500
         else
           # TODO: verify match
           verified = true
           for own key, val in session.blackjack
             if client.now.player[key] != val
               verified = false
-          # util.debug("FYI: client reconnected w/ existing data that matches session data")
-
-        # util.debug("before Lobby.sign_in(): ")
-        # util.debug(JSON.stringify(client.now.player))
+          util.debug("FYI: #{verified}: client reconnected w/ existing data that matches session data")
+        
         Lobby.sign_in(client.now.player)
-        # util.debug("after signin:")
-        # util.debug(JSON.stringify(client.now.player))
+        util.debug("after signin:")
+        util.debug(JSON.stringify(client.now.player))
       else
         session.blackjack = client.now.player = Lobby.join()
-        # util.debug("Lobby.join(): ")
-        # util.debug(JSON.stringify(session.blackjack))
+        util.debug("Lobby.join(): ")
+        util.debug(JSON.stringify(session.blackjack))
         app.session_store.set(sid, session, () ->)
+      
+      util.debug("trying to call client.now.connected?")
+      util.debug(client.now.connected?)
+      client.now.connected()
     )
   )
 
   nowjs.on("disconnect", () ->
     # TODO: clean up all connections & listeners
     client = this
-    Lobby.leave(client.now.room, client.now.player, (err, tables) ->)
+    console.log("#{client.user.clientId} disconnected")
+
+    # TODO: persist tables, data, etc
+    sid = decodeURIComponent(client.user.cookie["connect.sid"])
+    app.session_store.get(sid, (err, session) ->
+      app.session_store.set(sid, session, () ->)
+    )
+
+    nowjs.getGroup(client.now.room).removeUser(client.user.clientId)
+
+    
+    # Lobby.leave(client.now.room, client.now.player, (err, tables) ->)
   )
 
   

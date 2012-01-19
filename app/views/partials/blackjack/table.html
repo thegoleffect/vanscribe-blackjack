@@ -2,13 +2,16 @@
   <div class="current_table">
     {{> blackjack-dealer }}
 
-    {{#player}}
+    {{#table.player}}
       {{> blackjack-player }}
-    {{/player}}
+    {{/table.player}}
 
-    {{#table.players}}
+    {{#players}}
       {{> blackjack-players }}
-    {{/table.players}}
+    {{/players}}
+    {{#emptyseats}}
+      {{> blackjack-emptyseat }}
+    {{/emptyseats}}
     <div class="clear"></div>
   </div>
 {{/table}}

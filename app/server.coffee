@@ -11,7 +11,7 @@ monkeypatcher = require("./lib/monkeypatch")
 url = require("url")
 util = require("util")
 
-monkeypatcher.patch("./monkeypatches/now/now.js", "../../node_modules/now/lib/now.js")
+# monkeypatcher.patch("./monkeypatches/now/now.js", "../../node_modules/now/lib/now.js")
 nowjs = require("now")
 
 asset = {}

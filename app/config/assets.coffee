@@ -24,6 +24,7 @@ assetSettings = {
       "../../js/libs/backbone-0.5.3.min.js",
       "../../js/libs/hogan.js-1.0.3.js",
       "../../js/libs/radial-menu.js",
+      "../../js/plugins.js",
       # "../../.app.coffee",
       "../../src/js/index.coffee",
       "../../src/js/radialui.coffee",

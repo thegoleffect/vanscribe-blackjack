@@ -1,6 +1,7 @@
 _ = require("underscore")
 EE = require("../common/ee")
 Random = require("../../lib/alea")()
+util = require("util")
 {adjectives, nouns, ints} = require("../../lib/username-words")
 
 class Manager extends EE
@@ -10,7 +11,7 @@ class Manager extends EE
     @members = {}
     @names = {} # TODO: Could get quite large & does not persist through restarts: please fix
 
-    @create("Table #{i}") for i in [0..@max_tables-1]
+    @create("#{i}") for i in [0..@max_tables-1]
   
   # "Data" API
   _default: (options = {}) -> 
@@ -105,28 +106,26 @@ class Manager extends EE
     @removeListener(@_signal('update'), @listeners[clientId])
 
   sit: (table_name, user, onUpdate, callback) ->
+    util.debug("inside manager sit")
     return callback("Table '#{table_name}' was not found") if not @tables[table_name]?
-    return callback("You are already seated here") if @_already_seated_here(table_name, user)
     return callback("Table is full") if @_already_full(table_name)
     return callback("User must exist & have username") if not user or not user.username
     return callback("User must register by join()") if user.username not in _.keys(@members)
     # return callback("Table is private") # FUTURE: enable if users can create rooms
+    util.debug("after manager.sit error checking")
 
-    @tables[table_name].players.push(user.username)
-    # s = @_signal('update')
-    @emit(@_signal("update"), null, {
-      action: "sit",
-      table_name: table_name
-      user: user,
-      onUpdate: onUpdate
-    }, callback)
-
-    # @dealer.add_player(table_name, user, onUpdate, (err, state) ->
-    #   return callback(err) if err
-    #   self.emit(self._signal("update"), self.tables)
-
-    #   callback(null, state)
-    # )
+    # return callback(null, table_copy) if @_already_seated_here(table_name, user)
+    if not @_already_seated_here(table_name, user)
+      util.debug("user not already seated here")
+      @tables[table_name].players.push(user.username)
+      @emit(@_signal("update"), null, {
+        action: "sit",
+        table_name: table_name
+        user: user,
+        onUpdate: onUpdate
+      }, callback)
+    util.debug("sit completed")
+    # callback(null, table_copy)
 
   leave: (table_name, user, callback) ->
     return callback("Invalid table name supplied (#{table_name})") if not @tables[table_name]?

@@ -121,6 +121,9 @@ section#play {
   
   .menu {
     @menu-height: 36/@em;
+    a, a:visited {
+      color: blue;
+    }
 
     height: @menu-height;
     line-height: @menu-height;
@@ -177,6 +180,9 @@ section#play {
       .stat.icon {
         width: @1col - 1/@em;
         text-align: center;
+        a img {
+          margin-left: -.2em;
+        }
       }
 
       .purse {
@@ -211,7 +217,8 @@ section#play {
         font-weight: 600;
       }
       .table {
-        min-width: @4cols;
+        width: @4cols;
+        
         > div {
           float: left;
         }
@@ -225,6 +232,11 @@ section#play {
         }
         .seats {
           margin-right: (@gutter - 2)/@em;
+        }
+        .locked {
+          > p {
+            margin-left: -4/@em;
+          }
         }
       }
     }  
