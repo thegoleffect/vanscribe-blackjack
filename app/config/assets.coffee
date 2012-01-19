@@ -51,7 +51,10 @@ assetSettings = {
       # "../../bootstrap/lib/*.less",
       # "../../bootstrap/lib/bootstrap.less",
       "index.less",
-      "../css/playingcards/*"
+      # "../../css/playingcards/cards.css",
+      # "../../css/playingcards/cards-ie.css",
+      # "../../css/playingcards/cards-ie9.css",
+
       # "../../css/prettify.css"
     ],
     "preManipulate": {
