@@ -62,7 +62,7 @@ class WebServer #extends backbone.Model
         # req.UserModel.AbstractModel = RedisModel
 
         next()
-
+    
     app.configure("development", "production", () ->
       app.use(nitrous.init())
       app.use(express.bodyParser())
@@ -78,7 +78,7 @@ class WebServer #extends backbone.Model
       app.use(request_helper(nitrous))
       app.use(assets_middleware)
 
-      app.use(express.router(nitrous.routes()))
+      
     )
     app.configure("development", () ->
       app.use(express.errorHandler({dumpExceptions:true,showStack:true}))
@@ -95,6 +95,12 @@ class WebServer #extends backbone.Model
         return assets_middleware.cacheHashes
       'session': (req, res) -> return req.session
     })
+    
+    @everyone = nitrous.app.Controllers.nowjs.index(nowjs, nitrous, app)
+
+    app.configure(() ->
+      app.use(express.router(nitrous.routes())) # last step
+    )
 
     # share_options = {
     #   db: {
@@ -107,7 +113,7 @@ class WebServer #extends backbone.Model
     # _.extend(share_options.db, app.config.redisConfig)
     # sharejs.attach(app, share_options)
 
-    @everyone = nitrous.app.Controllers.nowjs.index(nowjs, nitrous, app)
+    
     
     app.listen(@config.port, () =>
       console.log("listening on port #{@config.port}")
