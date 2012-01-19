@@ -20,10 +20,15 @@ stripNowjs = (obj) ->
 module.exports = (nowjs, nitrous, app) ->
   subscribe = app.redis.subscribe
   publish = app.redis.publish
-  console.log("nitrous: ")
-  # console.log(app.config(app))
-  console.log(nitrous.settings)
   everyone = nowjs.initialize(app, {socketio: nitrous.settings.socketio})
+  console.log("nowjs conditional for session support:")
+  console.log('use' in app && 'stack' in app && 'route' in app)
+  console.log("app.use?")
+  console.log(app.use?)
+  console.log("app.stack?")
+  console.log(app.stack?)
+  console.log("app.route?")
+  console.log(app.route?)
 
   Lobby = new Manager()
   Bernie = new Dealer(Lobby.tables)
@@ -125,12 +130,16 @@ module.exports = (nowjs, nitrous, app) ->
     # TODO: use updated nowjs session
     sid = decodeURIComponent(client.user.cookie["connect.sid"])
     util.debug("#{this.user.clientId} connected")
+    util.debug("client.user:")
+    util.debug(JSON.stringify(client.user))
+    util.debug(JSON.stringify(nowjs.sessions[unescape(client.user.cookie["connect.sid"])]))
+
     # TODO: log the connection
     app.session_store.get(sid, (err, session) ->
       throw err if err
 
-      # util.debug("session for sid ('#{sid}''):")
-      # util.debug(JSON.stringify(session))
+      util.debug("session for sid ('#{sid}''):")
+      util.debug(JSON.stringify(session))
 
       if session.blackjack?
         # TODO: auth user

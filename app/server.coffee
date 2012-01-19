@@ -4,12 +4,15 @@ express = require('express')
 hogan = require("hogan.js")
 hogan_adapter = require("./lib/hogan-express")
 n2o = require("nitrous")
-nowjs = require("now")
 redis = require("redis")
 # sharejs = require("share").server
-# sharejs_monkeypatch = require("./lib/monkeypatch_sharejs").patch()
+# sharejs_monkeypatch = require("./lib/monkeypatch").patch()
+monkeypatcher = require("./lib/monkeypatch")
 url = require("url")
 util = require("util")
+
+monkeypatcher.patch("./monkeypatches/now/now.js", "../../node_modules/now/lib/now.js")
+nowjs = require("now")
 
 asset = {}
 blackjack = require("./lib/blackjack")

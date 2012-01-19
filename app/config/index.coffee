@@ -20,8 +20,6 @@ init_settings = (app) ->
     settings.socketio.transports.shift() # disable websockets on production
 
   console.log('initialized settings')
-  console.log("socketio.transports: ")
-  console.log(settings.socketio.transports)
   return settings
 
 parse_redis_url = _.memoize((hosturl) ->
