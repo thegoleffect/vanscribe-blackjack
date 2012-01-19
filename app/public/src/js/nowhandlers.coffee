@@ -40,7 +40,8 @@ class NowHandlers
           console.log("App.init()")
           App.init()
         else
-          console.log("not monitoring history right now")
+          # console.log("not monitoring history right now")
+          alert("FYI: Server may have just updated, you may experience weirdness until a refresh.")
     ), 1000)
     
 
