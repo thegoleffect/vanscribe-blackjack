@@ -91,15 +91,19 @@ class Table extends BaseView
         username = App.Views.Table.username 
         bet = data.state.table.players[username].bet
         console.log("bet = " + bet)
-        your_hand = App.Views.Table._hand_value(App.Views.Table.prev_table.hands[username])
-        dealer_hand = App.Views.Table._hand_value(App.Views.Table.prev_table.hands["dealer"])
+        if App.Views.Table.table.hands[username].length == 0
+          your_hand = App.Views.Table._hand_value(App.Views.Table.prev_table.hands[username])
+          dealer_hand = App.Views.Table._hand_value(App.Views.Table.prev_table.hands["dealer"])
+        else
+          your_hand = App.Views.Table._hand_value(App.Views.Table.prev_table.hands[username])
+          
         verb = data.state.table.players[username].outcome
         prefix = "+"
         prefix = "-" if verb == "lost"
         App.Views.Table.log({
           actor: "You",
           verb: verb,
-          object: "#{your_hand} to #{dealer_hand} (#{prefix}" + bet + ")"
+          object: "#{your_hand} to #{dealer_hand}"#" (#{prefix}" + bet + ")"
         })
         App.Routers.Actions.open()
         $('#statuslog h4 small').text("Click D to Play Again")
@@ -133,7 +137,7 @@ class Table extends BaseView
           App.Views.Table.log({
             actor: "You",
             verb: "should",
-            object: "push deal (D)"
+            object: "push deal button (D)"
           })
         else 
           console.log("notify of type #{type} for " + App.Views.Table.username)
