@@ -70,10 +70,6 @@ module.exports.html = (options = {}) ->
     # console.log(compiled) if name == "partials/blackjack/listtables"
     
     tmpl_array.push("'" + name + "': new HoganTemplate(" + compiled + ")")
-    # if "/partials/" in filename
-    #   tmpl_array.push("'" + name + "': new HoganTemplate().r = " + compiled)
-    # else
-    #   tmpl_array.push("'" + name + "': new HoganTemplate(" + compiled + ")")
   
   postprocess = (outfile) ->
     fs.writeFileSync(outfile, 'window.App.Templates = {' + tmpl_array.join(",\n") + '};\n', 'utf-8')
