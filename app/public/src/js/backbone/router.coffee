@@ -43,19 +43,24 @@ class LobbyRouter extends Backbone.Router
 
       # Automatically set a bet?
       now.bet(100, () ->
-        ctx = {}
-        ctx.table = {}
-        ctx.table.players = table.seats.filter((d) ->
+        player = {}
+        players = table.seats.filter((d) ->
           if d == 'shy-fog-62' #username
-            ctx.table.player = table.players[d]
+            player = table.players[d]
             return false
           else
             return true
         )
-        emptycount = table.max_players - 1 - ctx.table.players.length
-        if emptycount > 0
-          [1..emptycount].map((d) -> {id: d})
+        emptycount = table.meta.max_players - table.seats.length
+        emptyseats = if emptycount > 0 then [1..emptycount].map((d) -> {id: d}) else []
+        console.log("emptycount = #{emptycount}")
         
+        ctx = {}
+        ctx.table = {}
+        ctx.table.player = player
+        ctx.table.players = players
+        ctx.table.emptyseats = emptyseats
+
         console.log("ctx")
         console.log(ctx)
         window.ctx = ctx

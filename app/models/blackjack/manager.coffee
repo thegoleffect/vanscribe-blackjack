@@ -124,6 +124,13 @@ class Manager extends EE
         user: user,
         onUpdate: onUpdate
       }, callback)
+    else
+      @emit(@_signal("update"), null, {
+        action: "get",
+        table_name: table_name
+        user: user,
+        onUpdate: onUpdate
+      }, callback)
     util.debug("sit completed")
     # callback(null, table_copy)
 

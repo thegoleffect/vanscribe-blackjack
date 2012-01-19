@@ -51,6 +51,8 @@ class Dealer extends EE
         return @add_player(data.table_name, data.user, data.onUpdate, callback)
       when "stand"
         return @remove_player(data.table_name, data.user, callback)
+      when "get"
+        return @sanitize(data.table_name, callback) # TODO: deal w/ onUpdate
       else 
         # Ignore other actions
   
@@ -171,7 +173,7 @@ class Dealer extends EE
     # Set bet for player & restart grace period if needed
     error = @_set_bet(table_name, user, amount)
     if error
-      callback(response)
+      callback(error)
     else
       @games[table_name].players[user.username].last_action = +new Date()
       callback(null, amount)

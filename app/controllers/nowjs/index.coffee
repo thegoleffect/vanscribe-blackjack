@@ -58,7 +58,11 @@ module.exports = (nowjs, nitrous, app) ->
   everyone.now.sit_down = (name, callback) ->
     client = this
     util.debug("about to Lobby.sit(#{name})")
-    Lobby.sit(name, stripNowjs(client.now.player, "player in sit_down"), client.now.receive_action, callback)
+    Lobby.sit(name, stripNowjs(client.now.player, "player in sit_down"), client.now.receive_action, (err, table) ->
+      return callback(err) if err
+      client.now.room = name
+      callback(err, table)
+    )
   
   everyone.now.stand_up = (callback = null) ->
     client = this
@@ -78,6 +82,7 @@ module.exports = (nowjs, nitrous, app) ->
   ## Gameplay related functions
   everyone.now.bet = (amount, callback) ->
     client = this
+    util.debug("trying to bet in room: #{client.now.room}")
     Bernie.place_bet(client.now.room, stripNowjs(client.now.player, "player in bet"), amount, callback)
   
   everyone.now.get_table = (callback = () -> ) ->
@@ -153,13 +158,15 @@ module.exports = (nowjs, nitrous, app) ->
         util.debug(JSON.stringify(client.now.player))
       else
         session.blackjack = client.now.player = Lobby.join()
+        client.now.room = "Lobby"
+        nowjs.getGroup(client.now.room).addUser(client.user.clientId)
         util.debug("Lobby.join(): ")
         util.debug(JSON.stringify(session.blackjack))
         app.session_store.set(sid, session, () ->)
       
-      util.debug("trying to call client.now.connected?")
-      util.debug(client.now.connected?)
-      client.now.connected()
+      # util.debug("trying to call client.now.connected?")
+      # util.debug(client.now.connected?)
+      # client.now.connected()
     )
   )
 

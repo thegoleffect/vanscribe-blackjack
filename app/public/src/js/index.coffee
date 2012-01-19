@@ -25,6 +25,7 @@ $(document).ready(() ->
       if name.slice(0, 9) == "partials/"
         p_name = name.slice(9).split("/").join("-")
         App.Partials[p_name] = tmpl
+        App.Partials[p_name].r = App.Partials[p_name].text
 
     # if not is_monitoring_history
     #   is_monitoring_history = true

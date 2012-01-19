@@ -32,74 +32,11 @@
     {{!> blackjack-table }}
   </div>
   
-  <nav id="bet">
-    <div class="label">Bet</div>
-    <a href="#">100</a>
-    <ul>
-      <li><a href="#">Max</a></li>
-      <li><a href="#">+10</a></li>
-      <li><a href="#">Min</a></li>
-    </ul>
-  </nav>
-  <nav id="actions">
-    <div class="label">Actions</div>
-    <a href="#">+</a>
-    <ul>
-      <li><a href="#">S</a></li>
-      <li><a href="#">S</a></li>
-      <li><a href="#">H</a></li>
-    </ul>
-  </nav>
+  {{>common-radialui}}
 </section>
 
-<section id="rulers">
-  <figure id="grid">
-    <div class="col col1"></div>
-    <div class="col col2"></div>
-    <div class="col col3"></div>
-    <div class="col col4"></div>
-    <div class="col col5"></div>
-    <div class="col col6"></div>
-    <div class="col col7"></div>
-    <div class="col col8"></div>
-    <div class="col col9"></div>
-    <div class="col col10"></div>
-    <div class="col col11"></div>
-    <div class="col col12"></div>
-    <div class="col col13"></div>
-    <div class="col col14"></div>
-    <div class="col col15"></div>
-    <div class="col col16"></div>
-    <div class="col col17"></div>
-    <div class="col col18"></div>
-    <div class="col col19"></div>
-    <div class="col col20"></div>
-    <div class="col col21"></div>
-    <div class="col col22"></div>
-    <div class="col col23"></div>
-    <div class="col col24"></div>
-    <div class="col col25"></div>
-    <div class="col col26"></div>
-    <div class="col col27"></div>
-    <div class="col col28"></div>
-    <div class="col col29"></div>
-    <div class="col col30"></div>
-    <div class="col col31"></div>
-    <div class="col col32"></div>
-    <div class="col col33"></div>
-    <div class="col col34"></div>
-    <div class="col col35"></div>
-    <div class="col col36"></div>
-  </figure>
-</section>
+{{>common-rulers}}
 
-<section id="read" name="read">
-  <!-- Documentation section goes here -->
-  <h1>&#x2663; Blackjack</h1>
-  <p>Best played using an iPhone 4S.  More documentation forthcoming.</p>
-</section>
+{{>common-docs}}
 
-<section id="colophon" name="colophon">
-  <h1>Colophon</h1>
-  <p>List of stuff I used to build this &amp; learned during the process.</p>
-</section>
+{{> common-colophon}}
