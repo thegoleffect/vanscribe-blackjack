@@ -99,7 +99,7 @@ class Table extends BaseView
         App.Views.Table.log({
           actor: "You",
           verb: verb,
-          object: "#{your_hand} to #{dealer_hand} (#{prefix}" + bet + ").  Press D to continue"
+          object: "#{your_hand} to #{dealer_hand} (#{prefix}" + bet + ")"
         })
         App.Routers.Actions.open()
         $('#statuslog h4 small').text("Click D to Play Again")
