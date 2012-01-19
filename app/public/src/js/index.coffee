@@ -8,8 +8,10 @@ App = window.App = {
   KV: {},
   init: () ->
     status = Backbone.history.start()
+    $('#jsnoscript').remove()
     if not status
       console.log("current route was not found")
+      App.Router.navigate("lobby", true)
     else
       console.log("backbone loaded successfully")
 }

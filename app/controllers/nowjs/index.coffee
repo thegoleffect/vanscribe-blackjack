@@ -68,19 +68,17 @@ module.exports = (nowjs, nitrous, app) ->
   everyone.now.stand_up = (callback = null) ->
     client = this
     # TODO: Dealer.cash out?
-    if client.now.room == "Lobby"
-      
-    else
-      Lobby.leave(client.now.room, client.now.player, (err, tables) ->
-        throw err if err
 
-        # TODO: factor out into separate fn
-        nowjs.getGroup(client.now.room).removeUser(client.user.clientId)
-        client.now.room = "Lobby"
-        nowjs.getGroup(client.now.room).addUser(client.user.clientId)
+    Lobby.leave(client.now.room, client.now.player, (err, tables) ->
+      throw err if err
 
-        callback(null, tables) if callback?
-      )
+      # TODO: factor out into separate fn
+      nowjs.getGroup(client.now.room).removeUser(client.user.clientId)
+      client.now.room = "Lobby"
+      nowjs.getGroup(client.now.room).addUser(client.user.clientId)
+
+      callback(null, tables) if callback?
+    )
   
   ## Gameplay related functions
   everyone.now.bet = (amount, callback) ->
@@ -185,15 +183,11 @@ module.exports = (nowjs, nitrous, app) ->
     app.session_store.get(sid, (err, session) ->
       app.session_store.set(sid, session, () ->)
     )
-    
-    if client.now.room != "Lobby"
-      Lobby.leave(client.now.room, client.now.player, (err, tables) ->
-        nowjs.getGroup(client.now.room).removeUser(client.user.clientId)
-      )
-      
+
+    nowjs.getGroup(client.now.room).removeUser(client.user.clientId)
 
     
-    
+    Lobby.leave(client.now.room, client.now.player, (err, tables) ->)
   )
   
   # cleanup = (callback) ->
