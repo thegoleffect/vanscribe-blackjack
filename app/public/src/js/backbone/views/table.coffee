@@ -115,7 +115,7 @@ class Table extends BaseView
         console.log(["Table.on_update: ", data.action, err, data])
   
   log: (activity) ->
-    $('#gamelog h4').insertAfter("<p>" + [activity.actor, activity.verb, activity.object].join(" ") + ".</p>")
+    $('#gamelog h4').after("<p>" + [activity.actor, activity.verb, activity.object].join(" ") + ".</p>")
   
   notify_active: false
   notify: (type = "turn") ->
