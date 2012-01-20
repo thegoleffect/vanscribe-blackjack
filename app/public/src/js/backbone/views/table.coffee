@@ -1,6 +1,8 @@
 App = window.App
 BaseView = App.Views.Base
 
+# TODO: factor out this view into separate ones
+#       one for status msgs, history, other components
 class Table extends BaseView
   el: $("#current_table")
   tmpl: "partials/blackjack/table"

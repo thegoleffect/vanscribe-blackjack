@@ -6,4 +6,4 @@ module.exports = (nitrous) ->
     app.get("/", Controllers.index.index.get)
     app.get("/blackjack", Controllers.blackjack.index.get)
 
-    # app.get("*", Controllers.index.index.get)
+    # app.get("*", Controllers.index.index.404)
