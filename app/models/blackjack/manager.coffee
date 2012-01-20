@@ -10,7 +10,7 @@ class Manager extends EE
     @tables = {}
     @members = {}
     @names = {} # TODO: Could get quite large & does not persist through restarts: please fix
-
+    
     @create("#{i}") for i in [0..@max_tables-1]
   
   # "Data" API
@@ -41,7 +41,7 @@ class Manager extends EE
       throw "name generation returned invalid result (#{name})" if name == "" or name == "--"
       console.log("name generator has exceeded max tries (#{tries})") if tries >= 25
     return name
-
+    
   _new_player: (name = @_name()) ->
     player_obj = {
       username: name,
