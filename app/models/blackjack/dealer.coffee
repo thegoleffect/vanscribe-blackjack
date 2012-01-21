@@ -725,15 +725,26 @@ class Dealer extends EE
   _hand_value: (hand) ->
     # hand ranks are zero-indexed: Ace = 0
     value = 0
+    aces = []
     for card in hand
-      if card.r != 0 
+      if card.r != 0
         value += @_card_value(card.r)
       else
-        # Handle Ace case
-        if value + 11 > 21
-          value += 1
-        else
-          value += 11
+        value += 11
+        aces += 1
+    value -= 10*aces if value > 21
+    return value
+    
+    # value = 0
+    # aces = []
+    # for card in hand
+    #   if card.r != 0 
+    #     value += @_card_value(card.r)
+    #   else
+    #     # Handle Ace case
+    #     value += 11
+    #     aces.push(1)
+    # value -= 10 for ace in aces when value > 21 # TODO :switch 21 to MAX_HAND constraint or something
     return value
     
   _get_player_hand: (table_name, user) ->

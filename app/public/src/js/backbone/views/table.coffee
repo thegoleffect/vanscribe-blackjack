@@ -22,18 +22,19 @@ class Table extends BaseView
     return index + 1
   
   _hand_value: (hand) ->
+    # TODO: have client&server share models
     # hand ranks are zero-indexed: Ace = 0
     value = 0
+    aces = []
     for card in hand
-      if card.r != 0 
-        value += App.Views.Table._card_value(card.r)
+      if card.r != 0
+        value += @_card_value(card.r)
       else
-        # Handle Ace case
-        if value + 11 > 21
-          value += 1
-        else
-          value += 11
+        value += 11
+        aces += 1
+    value -= 10*aces if value > 21
     return value
+  
   on_update: (err, data) ->
     console.log("error Table.on_update") if err
     
@@ -110,7 +111,7 @@ class Table extends BaseView
         App.Routers.Actions.open()
         $('#statuslog h4 small').text("Click D to Play Again")
       when "broke"
-        App.Views.Table.updatePurse(data.purse)
+        App.Views.Table.updatePurse(data.state.purse)
         App.Views.Table.log({
           actor: "The casino",
           verb: "bails",
