@@ -211,6 +211,17 @@ class Dealer extends EE
   
   start_game: (table_name) ->
     throw "No such table exists" if not @games[table_name]?
+    if @games[table_name].hand_in_progress
+      # TODO: evaluate whether to display dialog & give user option to surrender & deal again.
+      #       then just clean up by running finish hand or some variant
+      @emit(@_signal(table_name), null, {
+        actor: username,
+        verb: "is not allowed to deal again",
+        # state: {card: ccard}
+        action: "invalid",
+        ts: +new Date()
+      })
+      return "Cannot request deal while hand in progress" # TODO: the str is for remember what this clause is for
     @games[table_name].hand_in_progress = true
     
     # Bring Queued players in
@@ -608,12 +619,12 @@ class Dealer extends EE
         callback(null, null) if callback
         return @interact_player(table_name, user)
       when "deal"
-        console.log(user)
-        util.debug("#{user.username} calls to #{action}")# Withhold bet
+        # console.log(user)
+        # util.debug("#{user.username} calls to #{action}")# Withhold bet
         play = @games[table_name].players[user.username]
-        console.log(play.purse)
+        # console.log(play.purse)
         play.purse += @rules.player_reward["withhold"](play.bet)
-        console.log("deal => adjusted purse = #{play.purse}")
+        # console.log("deal => adjusted purse = #{play.purse}")
         if play.purse <= 0
           @emit(@_signal(table_name), null, {
             actor: username,
@@ -625,7 +636,7 @@ class Dealer extends EE
         
         
         if @games[table_name].hand_in_progress
-          if username not in @games[table_name].seats
+          if username in @games[table_name].seats
             @emit(@_signal(table_name), null, {
               actor: username,
               verb: "is not allowed to deal again",
@@ -635,15 +646,16 @@ class Dealer extends EE
             })
             return callback("Cannot request deal while hand in progress") 
           else
-            @emit(@_signal(table_name), null, {
-              actor: username,
-              action: "has turn",
-              verb: "has turn", # TODO: switch from actions to verbs?
-              published: +new Date()
-            })
-            return callback(null, @start_game(table_name))
+            return callback("Cannot request deal when you are not seated")
+        else
+          @emit(@_signal(table_name), null, {
+            actor: username,
+            action: "has turn",
+            verb: "has turn", # TODO: switch from actions to verbs?
+            published: +new Date()
+          })
+          return callback(null, @start_game(table_name))
         return callback("Cannot request deal with a group") if @games[table_name].seats.length > 1
-        
         return callback(null, @start_game(table_name))
       else 
         return callback("Unauthorized action performed (#{action})")
